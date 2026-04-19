@@ -1,0 +1,26 @@
+# WordPress
+wp-admin/
+wp-includes/
+wp-config.php
+wp-load.php
+wp-blog-header.php
+index.php
+license.txt
+readme.html
+
+# Uploads (字体文件太大)
+wp-content/uploads/font-upload/*.ttf
+wp-content/uploads/font-upload/*.otf
+wp-content/uploads/font-upload/*.woff
+wp-content/uploads/font-upload/*.woff2
+
+# Backups
+*.bak*
+*.bak
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Cache
+*.tmp

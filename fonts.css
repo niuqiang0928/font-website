@@ -1,0 +1,1002 @@
+/* Auto-generated fonts.css */
+@font-face {
+  font-family: 'f_AbbrFesFont_ttf';
+  src: url('/wp-content/uploads/font-upload/AbbrFesFont.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_BaDingShiWeiTi_16_ttf';
+  src: url('/wp-content/uploads/font-upload/BaDingShiWeiTi-16.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_Bakudai_ExtraLight_ttf';
+  src: url('/wp-content/uploads/font-upload/Bakudai-ExtraLight.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_Bakudai_Light_ttf';
+  src: url('/wp-content/uploads/font-upload/Bakudai-Light.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_Bakudai_Medium_ttf';
+  src: url('/wp-content/uploads/font-upload/Bakudai-Medium.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_Bakudai_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/Bakudai-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_Baloo2Latin_Bold_ttf';
+  src: url('/wp-content/uploads/font-upload/Baloo2Latin-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_Baloo2Latin_ExtraBold_ttf';
+  src: url('/wp-content/uploads/font-upload/Baloo2Latin-ExtraBold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_Baloo2Latin_Medium_ttf';
+  src: url('/wp-content/uploads/font-upload/Baloo2Latin-Medium.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_Baloo2Latin_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/Baloo2Latin-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_Baloo2Latin_SemiBold_ttf';
+  src: url('/wp-content/uploads/font-upload/Baloo2Latin-SemiBold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_BoutiqueBitmap7x7_ttf';
+  src: url('/wp-content/uploads/font-upload/BoutiqueBitmap7x7.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_BoutiqueBitmap7x7_1_71_ttf';
+  src: url('/wp-content/uploads/font-upload/BoutiqueBitmap7x7_1.71.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_BoutiqueBitmap9x9HK_1_93_ttf';
+  src: url('/wp-content/uploads/font-upload/BoutiqueBitmap9x9HK_1.93.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_BoutiqueBitmap9x9HK_Bold_1_93_ttf';
+  src: url('/wp-content/uploads/font-upload/BoutiqueBitmap9x9HK_Bold_1.93.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_BoutiqueBitmap9x9_1_93_ttf';
+  src: url('/wp-content/uploads/font-upload/BoutiqueBitmap9x9_1.93.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_BoutiqueBitmap9x9_3D_ttf';
+  src: url('/wp-content/uploads/font-upload/BoutiqueBitmap9x9_3D.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_BoutiqueBitmap9x9_Blur_ttf';
+  src: url('/wp-content/uploads/font-upload/BoutiqueBitmap9x9_Blur.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_BoutiqueBitmap9x9_Bold_1_93_ttf';
+  src: url('/wp-content/uploads/font-upload/BoutiqueBitmap9x9_Bold_1.93.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_BoutiqueBitmap9x9_Circle_Dot_ttf';
+  src: url('/wp-content/uploads/font-upload/BoutiqueBitmap9x9_Circle_Dot.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_BoutiqueBitmap9x9_Gradient_ttf';
+  src: url('/wp-content/uploads/font-upload/BoutiqueBitmap9x9_Gradient.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_BoutiqueBitmap9x9_Square_Dot_ttf';
+  src: url('/wp-content/uploads/font-upload/BoutiqueBitmap9x9_Square_Dot.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_ChangBanDianSong_12_ttf';
+  src: url('/wp-content/uploads/font-upload/ChangBanDianSong-12.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_ChangBanDianSong_16_SC_ttf';
+  src: url('/wp-content/uploads/font-upload/ChangBanDianSong-16-SC.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_ChangBanDianSong_16_TC_ttf';
+  src: url('/wp-content/uploads/font-upload/ChangBanDianSong-16-TC.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_Chuanqu_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/Chuanqu-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_Cubic_11_ttf';
+  src: url('/wp-content/uploads/font-upload/Cubic_11.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_DotGothic16_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/DotGothic16-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_FashionBitmap16_0_092_ttf';
+  src: url('/wp-content/uploads/font-upload/FashionBitmap16_0.092.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_FiraCode_Bold_ttf';
+  src: url('/wp-content/uploads/font-upload/FiraCode-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_FiraCode_Light_ttf';
+  src: url('/wp-content/uploads/font-upload/FiraCode-Light.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_FiraCode_Medium_ttf';
+  src: url('/wp-content/uploads/font-upload/FiraCode-Medium.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_FiraCode_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/FiraCode-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_FiraCode_Retina_ttf';
+  src: url('/wp-content/uploads/font-upload/FiraCode-Retina.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_FiraCode_SemiBold_ttf';
+  src: url('/wp-content/uploads/font-upload/FiraCode-SemiBold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_HuayingMinchoClassic_ttf';
+  src: url('/wp-content/uploads/font-upload/HuayingMinchoClassic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_HuayingMinchoODict_ttf';
+  src: url('/wp-content/uploads/font-upload/HuayingMinchoODict.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_HuayingMinchoOld_ttf';
+  src: url('/wp-content/uploads/font-upload/HuayingMinchoOld.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_HuayingMinchoT_ttf';
+  src: url('/wp-content/uploads/font-upload/HuayingMinchoT.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_Huninn_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/Huninn-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_KleeOne_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/KleeOne-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_KleeOne_SemiBold_ttf';
+  src: url('/wp-content/uploads/font-upload/KleeOne-SemiBold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_LXGWMarkerGothic_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/LXGWMarkerGothic-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_LXGWNeoXiHei_ttf';
+  src: url('/wp-content/uploads/font-upload/LXGWNeoXiHei.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_LXGWNeoXiHeiPlus_ttf';
+  src: url('/wp-content/uploads/font-upload/LXGWNeoXiHeiPlus.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_LXGWNeoZhiSong_ttf';
+  src: url('/wp-content/uploads/font-upload/LXGWNeoZhiSong.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_LXGWNeoZhiSongPlus_ttf';
+  src: url('/wp-content/uploads/font-upload/LXGWNeoZhiSongPlus.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_LXGWWenKai_Light_ttf';
+  src: url('/wp-content/uploads/font-upload/LXGWWenKai-Light.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_LXGWWenKai_Medium_ttf';
+  src: url('/wp-content/uploads/font-upload/LXGWWenKai-Medium.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_LXGWWenKai_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/LXGWWenKai-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_LXGWWenKaiGB_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/LXGWWenKaiGB-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_LXGWWenKaiTC_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/LXGWWenKaiTC-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_LXGWXiHeiCL_ttf';
+  src: url('/wp-content/uploads/font-upload/LXGWXiHeiCL.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_LXGWXiHeiMN_ttf';
+  src: url('/wp-content/uploads/font-upload/LXGWXiHeiMN.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_LXGWZhenKaiGB_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/LXGWZhenKaiGB-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_LXGWZhenKaiSlabGB_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/LXGWZhenKaiSlabGB-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_LongZhuTi_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/LongZhuTi-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_Lxgw975GoSC_200W_ttf';
+  src: url('/wp-content/uploads/font-upload/Lxgw975GoSC-200W.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_Lxgw975GoSC_300W_ttf';
+  src: url('/wp-content/uploads/font-upload/Lxgw975GoSC-300W.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_Lxgw975GoSC_400W_ttf';
+  src: url('/wp-content/uploads/font-upload/Lxgw975GoSC-400W.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_Lxgw975GoSC_500W_ttf';
+  src: url('/wp-content/uploads/font-upload/Lxgw975GoSC-500W.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_Lxgw975GoSC_600W_ttf';
+  src: url('/wp-content/uploads/font-upload/Lxgw975GoSC-600W.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_MasaFont_Bold_ttf';
+  src: url('/wp-content/uploads/font-upload/MasaFont-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_MasaFont_Light_ttf';
+  src: url('/wp-content/uploads/font-upload/MasaFont-Light.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_MasaFont_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/MasaFont-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_MoonStarsKai_Bold_ttf';
+  src: url('/wp-content/uploads/font-upload/MoonStarsKai-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_MoonStarsKai_Light_ttf';
+  src: url('/wp-content/uploads/font-upload/MoonStarsKai-Light.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_MoonStarsKai_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/MoonStarsKai-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_MoonStarsKaiHW_Bold_ttf';
+  src: url('/wp-content/uploads/font-upload/MoonStarsKaiHW-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_MoonStarsKaiHW_Light_ttf';
+  src: url('/wp-content/uploads/font-upload/MoonStarsKaiHW-Light.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_MoonStarsKaiHW_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/MoonStarsKaiHW-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_MoonStarsKaiT_Bold_ttf';
+  src: url('/wp-content/uploads/font-upload/MoonStarsKaiT-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_MoonStarsKaiT_Light_ttf';
+  src: url('/wp-content/uploads/font-upload/MoonStarsKaiT-Light.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_MoonStarsKaiT_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/MoonStarsKaiT-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_MoonStarsKaiTHW_Bold_ttf';
+  src: url('/wp-content/uploads/font-upload/MoonStarsKaiTHW-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_MoonStarsKaiTHW_Light_ttf';
+  src: url('/wp-content/uploads/font-upload/MoonStarsKaiTHW-Light.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_MoonStarsKaiTHW_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/MoonStarsKaiTHW-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_NaniFont_Bold_ttf';
+  src: url('/wp-content/uploads/font-upload/NaniFont-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_NaniFont_Light_ttf';
+  src: url('/wp-content/uploads/font-upload/NaniFont-Light.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_NaniFont_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/NaniFont-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_NaniFont_SemiBold_ttf';
+  src: url('/wp-content/uploads/font-upload/NaniFont-SemiBold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_QuanHengDuLiang_v0_1_ttf';
+  src: url('/wp-content/uploads/font-upload/QuanHengDuLiang-v0.1.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_RampartOne_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/RampartOne-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_ReggaeOne_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/ReggaeOne-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_RenOuFangSong_16_ttf';
+  src: url('/wp-content/uploads/font-upload/RenOuFangSong-16.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_RocknRollOne_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/RocknRollOne-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_SmileySans_Oblique_ttf';
+  src: url('/wp-content/uploads/font-upload/SmileySans-Oblique.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_Stick_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/Stick-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_SweiHalfMoonCJKtc_Black_ttf';
+  src: url('/wp-content/uploads/font-upload/SweiHalfMoonCJKtc-Black.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_SweiHalfMoonCJKtc_Medium_ttf';
+  src: url('/wp-content/uploads/font-upload/SweiHalfMoonCJKtc-Medium.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_SweiHalfMoonCJKtc_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/SweiHalfMoonCJKtc-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_TiejiliSC_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/TiejiliSC-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_TrainOne_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/TrainOne-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_Uranus_Pixel_11Px_ttf';
+  src: url('/wp-content/uploads/font-upload/Uranus_Pixel_11Px.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_Xiaolai_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/Xiaolai-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_XiaolaiMono_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/XiaolaiMono-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_XiuZhenXiangSuTi_ttf';
+  src: url('/wp-content/uploads/font-upload/XiuZhenXiangSuTi.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_Yozai_Light_ttf';
+  src: url('/wp-content/uploads/font-upload/Yozai-Light.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_Yozai_Medium_ttf';
+  src: url('/wp-content/uploads/font-upload/Yozai-Medium.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_Yozai_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/Yozai-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_ZCOOLKuaiLe_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/ZCOOLKuaiLe-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_ZCOOLQingKeHuangYou_ttf';
+  src: url('/wp-content/uploads/font-upload/ZCOOLQingKeHuangYou.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_ark_pixel_inherited_16px_proportional_ttf';
+  src: url('/wp-content/uploads/font-upload/ark-pixel-inherited-16px-proportional.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_huaguansongti_ttf';
+  src: url('/wp-content/uploads/font-upload/huaguansongti.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_jf_openhuninn_1_1_ttf';
+  src: url('/wp-content/uploads/font-upload/jf-openhuninn-1.1.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_jf_openhuninn_2_1_ttf';
+  src: url('/wp-content/uploads/font-upload/jf-openhuninn-2.1.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_tkFangSong_ttf';
+  src: url('/wp-content/uploads/font-upload/tkFangSong.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_zpix_ttf';
+  src: url('/wp-content/uploads/font-upload/zpix.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_________________ttf';
+  src: url('/wp-content/uploads/font-upload/霞鹜尚智黑.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f______________Light_ttf';
+  src: url('/wp-content/uploads/font-upload/霞鹜文楷-Light.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f______________Medium_ttf';
+  src: url('/wp-content/uploads/font-upload/霞鹜文楷-Medium.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f______________Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/霞鹜文楷-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_____________GB_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/霞鹜文楷GB-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_____________Mono_Light_ttf';
+  src: url('/wp-content/uploads/font-upload/霞鹜文楷Mono-Light.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_____________Mono_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/霞鹜文楷Mono-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_____________TC_Regular_ttf';
+  src: url('/wp-content/uploads/font-upload/霞鹜文楷TC-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_________________ttf';
+  src: url('/wp-content/uploads/font-upload/霞鹜新晰黑.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_________________ttf';
+  src: url('/wp-content/uploads/font-upload/霞鹜新致宋.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f______________ttf';
+  src: url('/wp-content/uploads/font-upload/霞鹜晰黑.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f______________ttf';
+  src: url('/wp-content/uploads/font-upload/霞鹜漫黑.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f______________ttf';
+  src: url('/wp-content/uploads/font-upload/霞鹜致宋.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f______________ttf';
+  src: url('/wp-content/uploads/font-upload/霞鹜臻楷.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_GenneGothic_Bold_otf';
+  src: url('/wp-content/uploads/font-upload/GenneGothic-Bold.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_GenneGothic_ExtraLight_otf';
+  src: url('/wp-content/uploads/font-upload/GenneGothic-ExtraLight.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_GenneGothic_Heavy_otf';
+  src: url('/wp-content/uploads/font-upload/GenneGothic-Heavy.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_GenneGothic_Light_otf';
+  src: url('/wp-content/uploads/font-upload/GenneGothic-Light.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_GenneGothic_Medium_otf';
+  src: url('/wp-content/uploads/font-upload/GenneGothic-Medium.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_GenneGothic_Normal_otf';
+  src: url('/wp-content/uploads/font-upload/GenneGothic-Normal.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_GenneGothic_Regular_otf';
+  src: url('/wp-content/uploads/font-upload/GenneGothic-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_UnboundedSans_Regular_otf';
+  src: url('/wp-content/uploads/font-upload/UnboundedSans-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f______________Bold_otf';
+  src: url('/wp-content/uploads/font-upload/思源宋体-Bold.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f______________Light_otf';
+  src: url('/wp-content/uploads/font-upload/思源宋体-Light.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f______________Regular_otf';
+  src: url('/wp-content/uploads/font-upload/思源宋体-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f______________SemiBold_otf';
+  src: url('/wp-content/uploads/font-upload/思源宋体-SemiBold.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f______________Bold_otf';
+  src: url('/wp-content/uploads/font-upload/思源黑体-Bold.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f______________Heavy_otf';
+  src: url('/wp-content/uploads/font-upload/思源黑体-Heavy.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f______________Light_otf';
+  src: url('/wp-content/uploads/font-upload/思源黑体-Light.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f______________Regular_otf';
+  src: url('/wp-content/uploads/font-upload/思源黑体-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_____________TW_Regular_otf';
+  src: url('/wp-content/uploads/font-upload/源樣明體TW-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_____________TW_Regular_otf';
+  src: url('/wp-content/uploads/font-upload/源泉黑體TW-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_____________TW_Regular_otf';
+  src: url('/wp-content/uploads/font-upload/源流明體TW-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_____________TW_Regular_otf';
+  src: url('/wp-content/uploads/font-upload/源石黑體TW-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'f_____________TW_Regular_otf';
+  src: url('/wp-content/uploads/font-upload/源雲明體TW-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
