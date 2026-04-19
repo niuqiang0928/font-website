@@ -104,7 +104,9 @@ add_action('rest_api_init', function() {
     register_rest_route('font-auth/v1', '/me', [
         'methods'  => 'GET',
         'callback' => function() {
-            // Check token from Authorization header
+            $user = null;
+
+            // 1) Prefer Bearer token from localStorage-based login
             $token = '';
             if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
                 $auth = trim($_SERVER['HTTP_AUTHORIZATION']);
@@ -112,27 +114,28 @@ add_action('rest_api_init', function() {
                     $token = substr($auth, 7);
                 }
             }
-            if (empty($token)) {
-                return ['logged_in' => false, 'reason' => 'no_token'];
+
+            if (!empty($token)) {
+                $parts = explode('|', $token);
+                if (count($parts) === 3) {
+                    $user_id = intval($parts[0]);
+                    $expiry = intval($parts[1]);
+                    $stored = get_user_meta($user_id, 'font_auth_token', true);
+                    if ($expiry >= time() && $stored && hash_equals($stored, $token)) {
+                        $user = get_user_by('id', $user_id);
+                    }
+                }
             }
-            $parts = explode('|', $token);
-            if (count($parts) !== 3) {
-                return ['logged_in' => false, 'reason' => 'bad_format'];
+
+            // 2) Fallback to normal WordPress auth cookie
+            if (!$user && is_user_logged_in()) {
+                $user = wp_get_current_user();
             }
-            $user_id = intval($parts[0]);
-            $expiry = intval($parts[1]);
-            if ($expiry < time()) {
-                return ['logged_in' => false, 'reason' => 'expired'];
+
+            if (!$user || empty($user->ID)) {
+                return ['logged_in' => false];
             }
-            // Only compare hash - do NOT regenerate token here!
-            $stored = get_user_meta($user_id, 'font_auth_token', true);
-            if (!$stored || !hash_equals($stored, $token)) {
-                return ['logged_in' => false, 'reason' => 'invalid'];
-            }
-            $user = get_user_by('id', $user_id);
-            if (!$user) {
-                return ['logged_in' => false, 'reason' => 'user_not_found'];
-            }
+
             return [
                 'logged_in' => true,
                 'user' => [
@@ -141,6 +144,15 @@ add_action('rest_api_init', function() {
                     'email' => $user->user_email,
                 ]
             ];
+        },
+        'permission_callback' => '__return_true',
+    ]);
+
+    register_rest_route('font-auth/v1', '/logout', [
+        'methods'  => 'POST',
+        'callback' => function() {
+            wp_logout();
+            return ['success' => true];
         },
         'permission_callback' => '__return_true',
     ]);
