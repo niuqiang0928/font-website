@@ -159,6 +159,39 @@ if (!function_exists('fm_render_mail_notice')) {
     }
 }
 
+if (!function_exists('fm_capture_mail_failed')) {
+    function fm_capture_mail_failed($wp_error){
+        $GLOBALS['fm_last_mail_error'] = $wp_error instanceof WP_Error ? $wp_error->get_error_message() : '';
+    }
+}
+
+if (!function_exists('fm_send_test_mail')) {
+    function fm_send_test_mail($test_to){
+        $test_to = sanitize_email((string)$test_to);
+        if (!$test_to || !is_email($test_to)) {
+            return new WP_Error('invalid_test_email', '测试邮箱格式不正确');
+        }
+
+        $subject = '【' . (get_bloginfo('name') ?: 'Font Gallery') . '】SMTP 测试邮件';
+        $message = "这是一封后台邮箱配置测试邮件。\n\n发送时间：" . current_time('mysql') . "\n网站：" . home_url('/');
+
+        $GLOBALS['fm_last_mail_error'] = '';
+        add_action('wp_mail_failed', 'fm_capture_mail_failed', 10, 1);
+        $sent = wp_mail($test_to, $subject, $message);
+        remove_action('wp_mail_failed', 'fm_capture_mail_failed', 10);
+
+        if ($sent) {
+            return [
+                'success' => true,
+                'message' => '测试邮件已发送，请检查收件箱',
+            ];
+        }
+
+        $detail = !empty($GLOBALS['fm_last_mail_error']) ? '：' . $GLOBALS['fm_last_mail_error'] : '';
+        return new WP_Error('mail_failed', '测试邮件发送失败，请检查 SMTP 配置、端口、防火墙和邮箱授权码' . $detail);
+    }
+}
+
 if (!function_exists('fm_mail_settings_page')) {
     function fm_mail_settings_page(){
         if (!current_user_can('manage_options')) {
@@ -194,15 +227,13 @@ if (!function_exists('fm_mail_settings_page')) {
                         $notice = '测试邮箱格式不正确';
                         $notice_type = 'error';
                     } else {
-                        $subject = '【' . (get_bloginfo('name') ?: 'Font Gallery') . '】SMTP 测试邮件';
-                        $message = "这是一封后台邮箱配置测试邮件。\n\n发送时间：" . current_time('mysql') . "\n网站：" . home_url('/');
-                        $sent = wp_mail($test_to, $subject, $message);
-                        if ($sent) {
-                            $notice = '测试邮件已发送，请检查收件箱';
-                            $notice_type = 'success';
-                        } else {
-                            $notice = '测试邮件发送失败，请检查 SMTP 配置、端口、防火墙和邮箱授权码';
+                        $mail_result = fm_send_test_mail($test_to);
+                        if (is_wp_error($mail_result)) {
+                            $notice = $mail_result->get_error_message();
                             $notice_type = 'error';
+                        } else {
+                            $notice = $mail_result['message'];
+                            $notice_type = 'success';
                         }
                     }
                 }
@@ -230,7 +261,8 @@ if (!function_exists('fm_mail_settings_page')) {
             @media (max-width: 782px){.fm-grid{grid-template-columns:1fr}}
           </style>
           <div class="fm-mail-wrap">
-            <form method="post" class="fm-card">
+            <div id="fm-mail-status"></div>
+            <form method="post" class="fm-card" id="fm-mail-save-form">
               <?php wp_nonce_field('fm_mail_settings_action', 'fm_mail_settings_nonce'); ?>
               <input type="hidden" name="fm_mail_settings_action" value="save">
               <h2>SMTP 发信设置</h2>
@@ -281,12 +313,12 @@ if (!function_exists('fm_mail_settings_page')) {
                 </div>
               </div>
               <div class="fm-actions">
-                <button type="submit" class="button button-primary">保存邮箱配置</button>
+                <button type="submit" class="button button-primary" id="fm-save-mail-btn">保存邮箱配置</button>
                 <a href="<?php echo esc_url(admin_url('admin.php?page=font-manager')); ?>" class="button">返回字体管理</a>
               </div>
             </form>
 
-            <form method="post" class="fm-card">
+            <form method="post" class="fm-card" id="fm-mail-test-form">
               <?php wp_nonce_field('fm_mail_settings_action', 'fm_mail_settings_nonce'); ?>
               <input type="hidden" name="fm_mail_settings_action" value="test">
               <input type="hidden" name="smtp_enabled" value="<?php echo !empty($settings['smtp_enabled']) ? '1' : '0'; ?>">
@@ -305,13 +337,98 @@ if (!function_exists('fm_mail_settings_page')) {
                 <input type="email" id="test_to" name="test_to" value="<?php echo esc_attr(get_option('admin_email')); ?>" placeholder="输入测试收件地址">
               </div>
               <div class="fm-actions">
-                <button type="submit" class="button button-secondary">发送测试邮件</button>
+                <button type="submit" class="button button-secondary" id="fm-test-mail-btn">发送测试邮件</button>
               </div>
               <div class="fm-tip" style="margin-top:16px">
                 常见配置示例：QQ 邮箱通常是 smtp.qq.com + 465/SSL 或 587/TLS；企业邮箱请按服务商提供的 SMTP 主机、端口和授权码填写。
               </div>
             </form>
           </div>
+          <script>
+          (function(){
+            var saveForm = document.getElementById('fm-mail-save-form');
+            var testForm = document.getElementById('fm-mail-test-form');
+            var statusBox = document.getElementById('fm-mail-status');
+            if(!saveForm || !testForm || !statusBox || typeof ajaxurl === 'undefined') return;
+
+            function showStatus(type, message){
+              statusBox.innerHTML = '<div class="notice notice-' + type + ' is-dismissible"><p>' + message + '</p></div>';
+              try { window.scrollTo({top: 0, behavior: 'smooth'}); } catch (e) { window.scrollTo(0,0); }
+            }
+
+            function setLoading(btn, text, isLoading){
+              if(!btn) return;
+              if(isLoading){
+                btn.dataset.originalText = btn.dataset.originalText || btn.textContent;
+                btn.textContent = text;
+                btn.disabled = true;
+              } else {
+                btn.textContent = btn.dataset.originalText || btn.textContent;
+                btn.disabled = false;
+              }
+            }
+
+            function syncTestHiddenFields(){
+              var saveData = new FormData(saveForm);
+              ['smtp_enabled','from_name','from_email','host','port','secure','smtp_auth','username','password'].forEach(function(key){
+                var hidden = testForm.querySelector('input[name="' + key + '"]');
+                if(!hidden) return;
+                if(key === 'smtp_enabled' || key === 'smtp_auth'){
+                  hidden.value = saveData.get(key) ? '1' : '0';
+                } else {
+                  hidden.value = saveData.get(key) || '';
+                }
+              });
+            }
+
+            async function submitAjax(type, payload, btn, fallbackForm){
+              setLoading(btn, type === 'save' ? '保存中...' : '发送中...', true);
+              try {
+                var res = await fetch(ajaxurl, {
+                  method: 'POST',
+                  credentials: 'same-origin',
+                  headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+                  body: new URLSearchParams(payload).toString()
+                });
+                var data = await res.json();
+                if(data && data.success){
+                  showStatus('success', data.data && data.data.message ? data.data.message : '操作成功');
+                  if(type === 'save') syncTestHiddenFields();
+                } else {
+                  var msg = data && data.data && data.data.message ? data.data.message : '操作失败';
+                  showStatus('error', msg);
+                }
+              } catch (err) {
+                if (fallbackForm) {
+                  fallbackForm.submit();
+                  return;
+                }
+                showStatus('error', '请求失败：' + (err && err.message ? err.message : '未知错误'));
+              } finally {
+                setLoading(btn, '', false);
+              }
+            }
+
+            saveForm.addEventListener('submit', function(e){
+              e.preventDefault();
+              var btn = document.getElementById('fm-save-mail-btn');
+              var payload = new FormData(saveForm);
+              payload.append('action', 'fm_save_mail_settings');
+              payload.append('nonce', saveForm.querySelector('input[name="fm_mail_settings_nonce"]').value);
+              submitAjax('save', payload, btn, saveForm);
+            });
+
+            testForm.addEventListener('submit', function(e){
+              e.preventDefault();
+              syncTestHiddenFields();
+              var btn = document.getElementById('fm-test-mail-btn');
+              var payload = new FormData(testForm);
+              payload.append('action', 'fm_send_test_mail');
+              payload.append('nonce', testForm.querySelector('input[name="fm_mail_settings_nonce"]').value);
+              submitAjax('test', payload, btn, testForm);
+            });
+          })();
+          </script>
         </div>
         <?php
     }
@@ -323,6 +440,40 @@ if (!function_exists('fm_font_inline_style')) {
         return ' style="font-family:\'' . $family . '\',-apple-system,BlinkMacSystemFont,&quot;Microsoft YaHei&quot;,sans-serif" data-font-family="' . esc_attr($font_class) . '"';
     }
 }
+
+
+add_action('wp_ajax_fm_save_mail_settings', function(){
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(['message' => '需要管理员权限'], 403);
+    }
+
+    check_ajax_referer('fm_mail_settings_action', 'nonce');
+    $result = fm_save_mail_settings(wp_unslash($_POST));
+    if (is_wp_error($result)) {
+        wp_send_json_error(['message' => $result->get_error_message()], 400);
+    }
+
+    wp_send_json_success(['message' => '邮箱配置已保存']);
+});
+
+add_action('wp_ajax_fm_send_test_mail', function(){
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(['message' => '需要管理员权限'], 403);
+    }
+
+    check_ajax_referer('fm_mail_settings_action', 'nonce');
+    $saved = fm_save_mail_settings(wp_unslash($_POST));
+    if (is_wp_error($saved)) {
+        wp_send_json_error(['message' => $saved->get_error_message()], 400);
+    }
+
+    $result = fm_send_test_mail($_POST['test_to'] ?? '');
+    if (is_wp_error($result)) {
+        wp_send_json_error(['message' => $result->get_error_message()], 400);
+    }
+
+    wp_send_json_success(['message' => $result['message']]);
+});
 
 add_action('rest_api_init', function(){
     register_rest_route('font-manager/v1', '/download/(?P<slug>[A-Za-z0-9._-]+)', [
