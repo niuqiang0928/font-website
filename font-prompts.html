@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>字体提示词 - 免费字体下载</title>
+<link rel="stylesheet" href="/wp-content/uploads/font-upload/fonts.css?v=4">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0f0f0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Microsoft YaHei",sans-serif;min-height:100vh}
+.header{background:#1a1a1a;padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-size:20px;font-weight:700;color:#fff;text-decoration:none;display:flex;align-items:center;gap:10px}
+.logo-icon{font-size:24px}
+.header-nav{display:flex;gap:8px}
+.header-nav a{padding:6px 16px;border-radius:20px;color:#999;text-decoration:none;font-size:14px;transition:all .2s}
+.header-nav a:hover{color:#fff}
+.header-nav a.active{background:#fff;color:#000;font-weight:600}
+.auth-bar{display:flex;align-items:center;gap:12px}
+.auth-link{color:#999;text-decoration:none;font-size:14px;transition:color .2s}
+.auth-link:hover{color:#fff}
+.user-name{color:#fff;font-size:14px}
+.container{max-width:1200px;margin:0 auto;padding:30px 20px}
+.search-bar{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+.search-bar input{flex:1;min-width:200px;padding:10px 20px;background:#252525;border:1px solid #3a3a3a;color:#fff;border-radius:25px;font-size:14px;outline:none}
+.search-bar input:focus{border-color:#555}
+.search-bar input::placeholder{color:#666}
+.sub-nav{display:flex;gap:8px;margin-bottom:30px;flex-wrap:wrap}
+.sub-nav button{padding:7px 18px;border-radius:20px;border:1px solid #333;background:transparent;color:#888;cursor:pointer;font-size:13px;transition:all .2s}
+.sub-nav button:hover{border-color:#555;color:#fff}
+.sub-nav button.active{background:#fff;color:#000;border-color:#fff;font-weight:600}
+.grid{column-count:3;column-width:320px;column-gap:20px}
+.card{break-inside:avoid;margin-bottom:20px;background:#1a1a1a;border-radius:12px;overflow:hidden;cursor:pointer;transition:transform .2s}
+.card:hover{transform:translateY(-4px)}
+.card img{width:100%;display:block}
+.card-body{padding:14px}
+.card-prompt{color:#aaa;font-size:13px;line-height:1.6;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;word-break:break-all}
+.card-tag{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.7);color:#fff;padding:4px 10px;border-radius:50px;font-size:11px}
+.card{position:relative}
+.load-more{text-align:center;padding:30px;color:#666;font-size:14px}
+.load-more.hidden{display:none}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:1000;justify-content:center;align-items:center;padding:20px}
+.modal.active{display:flex}
+.modal-content{max-width:700px;width:100%;max-height:90vh;overflow-y:auto;background:#1a1a1a;border-radius:16px;position:relative}
+.modal-close{position:absolute;top:16px;right:16px;background:#333;border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:1}
+.modal-img{width:100%;border-radius:16px 16px 0 0;display:block;max-height:500px;object-fit:contain;background:#111}
+.modal-body{padding:24px}
+.modal-prompt{color:#ccc;font-size:15px;line-height:1.8;white-space:pre-wrap;word-break:break-all;margin-bottom:20px;background:#252525;padding:16px;border-radius:10px}
+.modal-copy{background:#fff;color:#000;border:none;padding:10px 24px;border-radius:25px;cursor:pointer;font-size:14px;font-weight:600}
+.modal-copy:hover{background:#f0f0f0}
+.modal-copy.copied{background:#4caf50;color:#fff}
+.no-result{text-align:center;padding:60px;color:#555;font-size:15px}
+@media(max-width:768px){
+ .header{padding:0 20px}
+ .grid{column-count:2;column-gap:12px}
+ .container{padding:20px 12px}
+ .modal-content{max-width:100%}
+}
+@media(max-width:480px){
+ .grid{column-count:1}
+}
+</style>
+</head>
+<body>
+<header class="header">
+<a href="/font-index.html" class="logo"><img src="/wp-content/uploads/logo-zitipai.png" height="36" alt="logo"></a>
+<nav class="header-nav">
+<a href="/font-index.html">首页</a>
+<a href="/font-prompts.html" class="active">字体提示词</a>
+<a href="/fonts.html">免费字体</a>
+</nav>
+<div class="auth-bar" id="authBar">
+<a href="/login.html" class="auth-link">登录</a>
+<span style="color:#555">|</span>
+<a href="/register.html" class="auth-link">注册</a>
+</div>
+</header>
+
+<div class="container">
+<div class="search-bar">
+<input type="text" id="searchInput" placeholder="搜索提示词..." />
+</div>
+<div class="sub-nav" id="subNav">
+<button class="active" data-cat="全部">全部</button>
+<button data-cat="毛笔字">毛笔字</button>
+<button data-cat="活动字">活动字</button>
+<button data-cat="可爱字">可爱字</button>
+<button data-cat="创意字">创意字</button>
+</div>
+<div class="grid" id="grid"></div>
+<div class="load-more hidden" id="loadMore">加载中...</div>
+<div class="no-result" id="noResult" style="display:none">没有找到匹配的提示词</div>
+</div>
+
+<div class="modal" id="modal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal()">×</button>
+<img class="modal-img" id="modalImg" src="" alt="">
+<div class="modal-body">
+<p class="modal-prompt" id="modalPrompt"></p>
+<button class="modal-copy" id="modalCopy" onclick="copyPrompt()">复制提示词</button>
+</div>
+</div>
+</div>
+
+<script src="/checkauth.js"></script>
+<script>
+(function(){
+ var state = {category:'全部',search:'',page:1,perPage:6,loading:false,hasMore:true};
+ var grid = document.getElementById('grid');
+ var loadMore = document.getElementById('loadMore');
+ var noResult = document.getElementById('noResult');
+ var searchInput = document.getElementById('searchInput');
+ var subNav = document.getElementById('subNav');
+ var allItems = {};
+
+ function buildCard(item){
+  var tagMap = {'毛笔字':'#d4a','活动字':'#4a9','可爱字':'#a4d','创意字':'#7a4'};
+  var tagColor = tagMap[item.category] || '#888';
+  return '<div class="card" onclick="openModal(' + item.id + ')">' +
+   '<div class="card-tag" style="background:' + tagColor + '">' + item.category + '</div>' +
+   '<img src="' + item.image_url + '" alt="" loading="lazy" />' +
+   '<div class="card-body"><p class="card-prompt">' + item.prompt.replace(/</g,'&lt;') + '</p></div></div>';
+ }
+
+ function renderItems(items, append){
+  if(!append) grid.innerHTML = '';
+  if(!items.length){
+   grid.style.display = 'none';
+   noResult.style.display = 'block';
+   return;
+  }
+  grid.style.display = '';
+  noResult.style.display = 'none';
+  items.forEach(function(item){ grid.innerHTML += buildCard(item); });
+ }
+
+ async function loadItems(append){
+  if(state.loading) return;
+  state.loading = true;
+  loadMore.classList.remove('hidden');
+  loadMore.textContent = '加载中...';
+  try {
+   var params = new URLSearchParams({p:state.page,n:state.perPage});
+   if(state.category && state.category !== '全部') params.set('category', state.category);
+   if(state.search) params.set('search', state.search);
+   var res = await fetch('/api-prompts.php?' + params.toString());
+   if(!res.ok) throw new Error('Network error');
+   var data = await res.json();
+   if(data.items){ data.items.forEach(function(item){ allItems[item.id] = item; }); }
+   renderItems(data.items || [], append);
+   state.hasMore = data.has_more;
+   loadMore.textContent = state.hasMore ? '上滑加载更多' : '— 已加载全部 —';
+   if(!state.hasMore) loadMore.classList.add('hidden');
+  } catch(e){
+   loadMore.textContent = '加载失败，请重试';
+   console.error(e);
+  } finally { state.loading = false; }
+ }
+
+ function resetAndLoad(){
+  state.page = 1;
+  state.hasMore = true;
+  allItems = {};
+  grid.innerHTML = '';
+  loadMore.classList.remove('hidden');
+  loadMore.textContent = '加载中...';
+  loadItems(false);
+ }
+
+ subNav.addEventListener('click', function(e){
+  var btn = e.target.closest('button');
+  if(!btn) return;
+  subNav.querySelectorAll('button').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  state.category = btn.dataset.cat;
+  state.search = searchInput.value.trim();
+  resetAndLoad();
+ });
+
+ var searchTimer;
+ searchInput.addEventListener('input', function(){
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(function(){
+   state.search = searchInput.value.trim();
+   resetAndLoad();
+  }, 400);
+ });
+
+ var scrollTimer;
+ window.addEventListener('scroll', function(){
+  if(state.loading || !state.hasMore) return;
+  clearTimeout(scrollTimer);
+  scrollTimer = setTimeout(function(){
+   var scrollH = document.documentElement.scrollHeight;
+   var clientH = document.documentElement.clientHeight;
+   var scrollTop = document.documentElement.scrollTop;
+   if(scrollTop + clientH >= scrollH - 400){
+    state.page++;
+    loadItems(true);
+   }
+  }, 200);
+ });
+
+ window.openModal = function(id){
+  var item = allItems[id];
+  if(!item) return;
+  document.getElementById('modalImg').src = item.image_url;
+  document.getElementById('modalPrompt').textContent = item.prompt;
+  document.getElementById('modal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+ };
+
+ window.closeModal = function(){
+  document.getElementById('modal').classList.remove('active');
+  document.body.style.overflow = '';
+ };
+
+ document.getElementById('modal').addEventListener('click', function(e){
+  if(e.target === this) closeModal();
+ });
+
+ window.copyPrompt = function(){
+  var text = document.getElementById('modalPrompt').textContent;
+  navigator.clipboard.writeText(text).then(function(){
+   var btn = document.getElementById('modalCopy');
+   btn.textContent = '已复制!';
+   btn.classList.add('copied');
+   setTimeout(function(){ btn.textContent = '复制提示词'; btn.classList.remove('copied'); }, 1500);
+  });
+ };
+
+ loadItems(false);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>免费字体 - 免费字体下载</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0f0f0f;font-family:-apple-system,BlinkMacSystemFont,"Microsoft YaHei",sans-serif;color:#fff}
+.header{background:#1a1a1a;padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-size:20px;font-weight:700;color:#fff;text-decoration:none;display:flex;align-items:center;gap:10px}
+.logo-icon{font-size:24px}
+.header-nav{display:flex;gap:8px}
+.header-nav a{padding:6px 16px;border-radius:20px;color:#999;text-decoration:none;font-size:14px;transition:all .2s}
+.header-nav a:hover{color:#fff}
+.header-nav a.active{background:#fff;color:#000;font-weight:600}
+.auth-bar{display:flex;align-items:center;gap:12px}
+.auth-link{color:#999;text-decoration:none;font-size:14px;transition:color .2s}
+.auth-link:hover{color:#fff}
+.user-name{color:#fff;font-size:14px}
+.container{max-width:1200px;margin:0 auto;padding:30px 20px}
+.search-bar{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;align-items:center}
+.search-bar input{flex:1;min-width:200px;padding:10px 20px;background:#1a1a1a;border:1px solid #333;color:#fff;border-radius:25px;font-size:14px;outline:none}
+.search-bar input:focus{border-color:#555}
+.search-bar input::placeholder{color:#555}
+.cat-bar{display:flex;gap:8px;margin-bottom:30px;flex-wrap:wrap}
+.cat-bar button{padding:7px 18px;border-radius:20px;border:1px solid #333;background:#1a1a1a;color:#888;cursor:pointer;font-size:13px;transition:all .2s}
+.cat-bar button:hover{border-color:#555;color:#fff}
+.cat-bar button.active{background:#fff;color:#000;border-color:#fff;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.grid .font-item{background:#1a1a1a;border-radius:12px;padding:20px;cursor:pointer;transition:background .2s;display:flex;flex-direction:column;align-items:center;text-align:center;border:1px solid #2a2a2a}
+.grid .font-item:hover{background:#222;border-color:#3a3a3a}
+.grid .font-item .font-preview{font-size:36px;color:#fff;margin-bottom:12px;height:60px;display:flex;align-items:center;justify-content:center}
+.grid .font-item .font-name{color:rgba(255,255,255,.7);font-size:13px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;width:100%}
+.grid .font-item .font-cat{color:rgba(255,255,255,.3);font-size:11px;margin-top:6px}
+.placeholder-block{background:#1a1a1a;border-radius:12px;padding:20px;color:rgba(255,255,255,.2);font-size:13px;text-align:center;border:1px solid #2a2a2a;min-height:120px;display:flex;align-items:center;justify-content:center}
+.no-more{text-align:center;padding:20px;color:#444;font-size:13px;margin-top:16px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.grid{grid-template-columns:repeat(2,1fr);padding:0 12px}.container{padding:20px 12px}}
+</style>
+</head>
+<body>
+<header class="header">
+<a href="/font-index.html" class="logo"><img src="/wp-content/uploads/logo-zitipai.png" height="36" alt="logo"></a>
+<nav class="header-nav">
+<a href="/font-index.html">首页</a>
+<a href="/font-prompts.html">字体提示词</a>
+<a href="/fonts.html" class="active">免费字体</a>
+</nav>
+<div class="auth-bar" id="authBar">
+<a href="/login.html" class="auth-link">登录</a>
+<span style="color:#444">|</span>
+<a href="/register.html" class="auth-link">注册</a>
+</div>
+</header>
+
+<div class="container">
+<div class="search-bar">
+<input type="text" id="searchInput" placeholder="搜索字体名称..." />
+</div>
+<div class="cat-bar" id="catBar">
+<button class="active" data-cat="">全部</button>
+<button data-cat="黑体">黑体</button>
+<button data-cat="宋体">宋体</button>
+<button data-cat="楷体">楷体</button>
+<button data-cat="艺术体">艺术体</button>
+<button data-cat="像素体">像素体</button>
+<button data-cat="其他">其他</button>
+</div>
+<div class="grid" id="fontGrid">
+<div class="placeholder-block">加载中...</div>
+</div>
+<div class="no-more" id="noMore" style="display:none">— 已加载全部 —</div>
+</div>
+
+<script src="/checkauth.js"></script>
+<script>
+(function(){
+ var currentCat='';
+ var currentSearch='';
+ var grid=document.getElementById('fontGrid');
+ var catBar=document.getElementById('catBar');
+ var searchInput=document.getElementById('searchInput');
+ var noMore=document.getElementById('noMore');
+
+ function renderFonts(fonts){
+  if(!fonts.length){grid.innerHTML='<div class=placeholder-block>暂无字体</div>';noMore.style.display='none';return;}
+  grid.innerHTML='';
+  fonts.forEach(function(f){
+   var preview=f.preview_text||f.font_name||'字体';
+   var fname=f.font_name||preview;
+   grid.innerHTML+='<div class=font-item onclick="location.href=\'/font/'+f.font_slug+'/index.html\'">'+
+    '<div class=font-preview style="font-family:\''+f.font_class+'\'">'+preview+'</div>'+
+    '<div class=font-name>'+fname+'</div>'+
+    '<div class=font-cat>'+(f.category||'')+'</div></div>';
+  });
+  noMore.style.display='block';
+ }
+
+ function loadAll(){
+  grid.innerHTML='<div class=placeholder-block>加载中...</div>';
+  noMore.style.display='none';
+  var url='/api-fonts.php?n=200';
+  if(currentCat) url+='&cat='+encodeURIComponent(currentCat);
+  if(currentSearch) url+='&q='+encodeURIComponent(currentSearch);
+  fetch(url)
+   .then(function(r){return r.json()})
+   .then(renderFonts)
+   .catch(function(){grid.innerHTML='<div class=placeholder-block>加载失败</div>';});
+ }
+
+ catBar.addEventListener('click',function(e){
+  var btn=e.target.closest('button');
+  if(!btn) return;
+  catBar.querySelectorAll('button').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  currentCat=btn.dataset.cat;
+  currentSearch='';
+  searchInput.value='';
+  loadAll();
+ });
+
+ var searchTimer;
+ searchInput.addEventListener('input',function(){
+  clearTimeout(searchTimer);
+  searchTimer=setTimeout(function(){
+   currentSearch=searchInput.value.trim();
+   currentCat='';
+   catBar.querySelectorAll('button').forEach(function(b){b.classList.remove('active');});
+   var allBtn=catBar.querySelector('button[data-cat=\"\"]');
+   if(allBtn) allBtn.classList.add('active');
+   loadAll();
+  },400);
+ });
+
+ loadAll();
+})();
+</script>
+</body>
+</html>
