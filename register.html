@@ -10,7 +10,7 @@ body{background:#0f0f0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,
 .auth-page{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;position:relative}
 .auth-logo{font-size:13px;letter-spacing:3px;color:#444;margin-bottom:40px;text-align:center}
 .auth-logo a{color:inherit;text-decoration:none}
-.auth-card{background:#1a1a1a;border:1px solid #222;border-radius:18px;padding:40px 36px;width:100%;max-width:400px}
+.auth-card{background:#1a1a1a;border:1px solid #222;border-radius:18px;padding:40px 36px;width:100%;max-width:420px}
 .auth-title{font-size:22px;font-weight:700;color:#fff;margin-bottom:6px;letter-spacing:1px}
 .auth-sub{color:#555;font-size:13px;margin-bottom:28px}
 .auth-form{display:flex;flex-direction:column;gap:0}
@@ -19,6 +19,11 @@ body{background:#0f0f0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,
 .form-input{width:100%;padding:12px 16px;background:#111;border:1px solid #2a2a2a;border-radius:10px;color:#fff;font-size:15px;outline:none;transition:border-color .2s;box-sizing:border-box}
 .form-input:focus{border-color:#555}
 .form-input::placeholder{color:#444}
+.inline-row{display:flex;gap:10px;align-items:stretch}
+.inline-row .form-input{flex:1}
+.code-btn{flex:0 0 120px;padding:0 10px;background:#222;color:#fff;border:1px solid #333;border-radius:10px;cursor:pointer;font-size:13px}
+.code-btn:hover{background:#2a2a2a}
+.code-btn:disabled{opacity:.55;cursor:not-allowed}
 .form-btn{width:100%;padding:13px;background:#fff;color:#000;border:none;border-radius:50px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;margin-top:8px;letter-spacing:.5px}
 .form-btn:hover{background:#ddd;transform:scale(1.01)}
 .form-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
@@ -32,7 +37,7 @@ body{background:#0f0f0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,
 .wp-site-text{color:#555;font-size:11px;margin-top:20px;text-align:center;letter-spacing:.5px}
 .wp-site-text a{color:#666;text-decoration:none}
 .wp-site-text a:hover{color:#999}
-@media(max-width:480px){.auth-card{padding:30px 24px}}
+@media(max-width:480px){.auth-card{padding:30px 24px}.inline-row{flex-direction:column}.code-btn{flex:unset;height:44px}}
 </style>
 </head>
 <body>
@@ -40,7 +45,7 @@ body{background:#0f0f0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,
   <div class="auth-logo"><a href="/font-index.html">FONT GALLERY</a></div>
   <div class="auth-card">
     <h1 class="auth-title">创建账号</h1>
-    <p class="auth-sub">注册后即可下载所有字体</p>
+    <p class="auth-sub">注册前需要先完成邮箱验证码验证</p>
     <div class="form-error" id="regError"></div>
     <div class="form-success" id="regSuccess"></div>
     <form class="auth-form" id="regForm">
@@ -51,6 +56,13 @@ body{background:#0f0f0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,
       <div class="form-group">
         <label class="form-label">邮箱</label>
         <input type="email" name="email" class="form-input" placeholder="输入邮箱地址" required autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">邮箱验证码</label>
+        <div class="inline-row">
+          <input type="text" name="code" class="form-input" placeholder="输入 6 位验证码" required maxlength="6" inputmode="numeric" autocomplete="one-time-code">
+          <button type="button" class="code-btn" id="sendCodeBtn">获取验证码</button>
+        </div>
       </div>
       <div class="form-group">
         <label class="form-label">密码</label>
@@ -64,16 +76,109 @@ body{background:#0f0f0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,
 </div>
 <script>
 (function() {
+  var STORAGE_KEY = 'font_auth_token';
   var params = new URLSearchParams(window.location.search);
   var redirectUrl = params.get('redirect') || '';
   var form = document.getElementById('regForm');
   var btn  = document.getElementById('regBtn');
+  var sendCodeBtn = document.getElementById('sendCodeBtn');
   var err  = document.getElementById('regError');
   var suc  = document.getElementById('regSuccess');
   var switchToLogin = document.getElementById('switchToLogin');
+  var countdownTimer = null;
+  var countdown = 0;
+
   if (switchToLogin && redirectUrl) {
     switchToLogin.href = '/login.html?redirect=' + encodeURIComponent(redirectUrl);
   }
+
+  function showError(message) {
+    suc.classList.remove('show');
+    suc.textContent = '';
+    err.textContent = message;
+    err.classList.add('show');
+  }
+
+  function showSuccess(message) {
+    err.classList.remove('show');
+    err.textContent = '';
+    suc.textContent = message;
+    suc.classList.add('show');
+  }
+
+  function safeJson(response) {
+    return response.text().then(function(text) {
+      var data = {};
+      try { data = text ? JSON.parse(text) : {}; }
+      catch (e) { data = { success:false, message:'返回数据格式错误' }; }
+      data._ok = response.ok;
+      return data;
+    });
+  }
+
+  function setCodeButtonState() {
+    if (countdown > 0) {
+      sendCodeBtn.disabled = true;
+      sendCodeBtn.textContent = countdown + 's后重发';
+    } else {
+      sendCodeBtn.disabled = false;
+      sendCodeBtn.textContent = '获取验证码';
+    }
+  }
+
+  function startCountdown(seconds) {
+    countdown = seconds;
+    setCodeButtonState();
+    if (countdownTimer) clearInterval(countdownTimer);
+    countdownTimer = setInterval(function() {
+      countdown -= 1;
+      if (countdown <= 0) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+        countdown = 0;
+      }
+      setCodeButtonState();
+    }, 1000);
+  }
+
+  sendCodeBtn.addEventListener('click', function() {
+    var email = form.email.value.trim();
+    if (!email) {
+      showError('请先输入邮箱地址');
+      form.email.focus();
+      return;
+    }
+
+    sendCodeBtn.disabled = true;
+    sendCodeBtn.textContent = '发送中...';
+    err.classList.remove('show');
+    suc.classList.remove('show');
+
+    var fd = new FormData();
+    fd.append('email', email);
+
+    fetch('/wp-json/font-auth/v1/send-code', {
+      method: 'POST',
+      body: fd,
+      credentials: 'include'
+    })
+    .then(safeJson)
+    .then(function(data) {
+      if (data && data.success) {
+        showSuccess((data && data.message) || '验证码已发送，请查收邮箱');
+        startCountdown(60);
+      } else {
+        sendCodeBtn.disabled = false;
+        sendCodeBtn.textContent = '获取验证码';
+        showError((data && data.message) || '验证码发送失败');
+      }
+    })
+    .catch(function() {
+      sendCodeBtn.disabled = false;
+      sendCodeBtn.textContent = '获取验证码';
+      showError('网络错误，请重试');
+    });
+  });
 
   form.addEventListener('submit', function(e) {
     e.preventDefault();
@@ -85,8 +190,9 @@ body{background:#0f0f0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,
     btn.disabled = true;
 
     var fd = new FormData();
-    fd.append('username', form.username.value);
-    fd.append('email', form.email.value);
+    fd.append('username', form.username.value.trim());
+    fd.append('email', form.email.value.trim());
+    fd.append('code', form.code.value.trim());
     fd.append('password', form.password.value);
 
     fetch('/wp-json/font-auth/v1/register', {
@@ -94,24 +200,21 @@ body{background:#0f0f0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,
       body: fd,
       credentials: 'include'
     })
-    .then(function(r) { return r.json(); })
+    .then(safeJson)
     .then(function(data) {
-      if (data.success) {
-        if (data.token) localStorage.setItem('font_auth_token', data.token);
-        suc.textContent = '注册成功！正在跳转...';
-        suc.classList.add('show');
-        btn.textContent = '注册成功！';
-        setTimeout(function() { window.location.href = redirectUrl || '/font-index.html'; }, 1000);
+      if (data && data.logged_in && data.token) {
+        try { localStorage.setItem(STORAGE_KEY, data.token); } catch (e) {}
+        showSuccess('注册成功，正在跳转...');
+        btn.textContent = '注册成功';
+        window.location.href = redirectUrl || '/font-index.html';
       } else {
-        err.textContent = data.message || '注册失败，请重试';
-        err.classList.add('show');
+        showError((data && data.message) || '注册失败，请重试');
         btn.textContent = '立即注册';
         btn.disabled = false;
       }
     })
     .catch(function() {
-      err.textContent = '网络错误，请重试';
-      err.classList.add('show');
+      showError('网络错误，请重试');
       btn.textContent = '立即注册';
       btn.disabled = false;
     });

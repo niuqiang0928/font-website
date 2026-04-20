@@ -1,5 +1,6 @@
 (function () {
   var STORAGE_KEY = 'font_auth_token';
+  var TOKEN_HEADER = 'X-Font-Auth-Token';
 
   function getToken() {
     try { return localStorage.getItem(STORAGE_KEY) || ''; } catch (e) { return ''; }
@@ -29,8 +30,18 @@
 
   function escapeHtml(str) {
     return String(str || '').replace(/[&<>"']/g, function (m) {
-      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m];
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m];
     });
+  }
+
+  function buildAuthHeaders(includeAuthBearer) {
+    var token = getToken();
+    var headers = {};
+    if (token) {
+      headers[TOKEN_HEADER] = token;
+      if (includeAuthBearer) headers.Authorization = 'Bearer ' + token;
+    }
+    return headers;
   }
 
   function appendToken(url) {
@@ -51,7 +62,11 @@
       var logoutBtn = document.getElementById('logoutBtn');
       if (logoutBtn) {
         logoutBtn.addEventListener('click', function () {
-          fetch('/wp-json/font-auth/v1/logout', { method: 'POST', credentials: 'include' })
+          fetch('/wp-json/font-auth/v1/logout', {
+            method: 'POST',
+            credentials: 'include',
+            headers: buildAuthHeaders(true)
+          })
             .catch(function () {})
             .finally(function () {
               clearToken();
@@ -77,14 +92,47 @@
     var registerBtn = modal.querySelector('.register-modal-btn');
     if (registerBtn) registerBtn.href = buildRegisterUrl();
     modal.classList.add('active');
+    modal.classList.add('show');
   }
 
   function closeLoginModal() {
     var modal = document.getElementById('loginModal');
-    if (modal) modal.classList.remove('active');
+    if (!modal) return;
+    modal.classList.remove('active');
+    modal.classList.remove('show');
   }
 
   window.closeLoginModal = closeLoginModal;
+
+  function detectFontFamily(el) {
+    if (!el) return '';
+    if (el.dataset && el.dataset.fontFamily) return el.dataset.fontFamily;
+
+    if (el.classList) {
+      for (var i = 0; i < el.classList.length; i++) {
+        var cls = el.classList[i];
+        if (/^f_/.test(cls)) return cls;
+      }
+    }
+
+    var card = el.closest ? el.closest('.font-card') : null;
+    if (card && card.getAttribute('data-font-class')) {
+      return card.getAttribute('data-font-class');
+    }
+    return '';
+  }
+
+  function applyFontPreviews() {
+    var nodes = document.querySelectorAll('.preview-main');
+    if (!nodes.length) return;
+
+    nodes.forEach(function (el) {
+      var family = detectFontFamily(el);
+      if (!family) return;
+      el.dataset.fontFamily = family;
+      el.style.fontFamily = '\'' + family.replace(/'/g, "\\'") + '\', -apple-system, BlinkMacSystemFont, "Microsoft YaHei", sans-serif';
+    });
+  }
 
   function triggerProtectedDownload(url) {
     if (!url) return;
@@ -119,31 +167,36 @@
     updateAuthBar(user || null);
     bindDownload(user || null);
     bindModal();
+    applyFontPreviews();
+  }
+
+  function safeJson(response) {
+    return response.text().then(function (text) {
+      try { return text ? JSON.parse(text) : {}; }
+      catch (e) { return { success: false, message: '返回数据格式错误', raw: text }; }
+    });
   }
 
   function checkAuth() {
     var token = getToken();
-    var headers = {};
-    if (token) headers.Authorization = 'Bearer ' + token;
-
     fetch('/wp-json/font-auth/v1/me', {
       method: 'GET',
       credentials: 'include',
-      headers: headers
+      headers: buildAuthHeaders(true)
     })
-    .then(function (r) { return r.json(); })
-    .then(function (data) {
-      if (data && data.logged_in) {
-        if (data.token) setToken(data.token);
-        applyAuth(data.user || null);
-      } else {
-        if (token) clearToken();
+      .then(safeJson)
+      .then(function (data) {
+        if (data && data.logged_in) {
+          if (data.token) setToken(data.token);
+          applyAuth(data.user || null);
+        } else {
+          if (token) clearToken();
+          applyAuth(null);
+        }
+      })
+      .catch(function () {
         applyAuth(null);
-      }
-    })
-    .catch(function () {
-      applyAuth(null);
-    });
+      });
   }
 
   window.fontAuth = {

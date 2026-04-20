@@ -24,6 +24,8 @@ body{background:#0f0f0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,
 .form-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
 .form-error{background:#2a1010;border:1px solid #5a2020;color:#e55;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;display:none}
 .form-error.show{display:block}
+.form-success{background:#102a10;border:1px solid #205020;color:#5e5;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;display:none}
+.form-success.show{display:block}
 .auth-footer{text-align:center;margin-top:20px;color:#444;font-size:13px}
 .auth-footer a{color:#777;text-decoration:none;transition:color .2s}
 .auth-footer a:hover{color:#fff}
@@ -38,12 +40,13 @@ body{background:#0f0f0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,
   <div class="auth-logo"><a href="/font-index.html">FONT GALLERY</a></div>
   <div class="auth-card">
     <h1 class="auth-title">登录账号</h1>
-    <p class="auth-sub">登录后即可下载所有字体</p>
+    <p class="auth-sub">支持用户名或邮箱登录</p>
     <div class="form-error" id="loginError"></div>
+    <div class="form-success" id="loginSuccess"></div>
     <form class="auth-form" id="loginForm">
       <div class="form-group">
-        <label class="form-label">用户名</label>
-        <input type="text" name="username" class="form-input" placeholder="输入用户名" required autocomplete="username">
+        <label class="form-label">用户名或邮箱</label>
+        <input type="text" name="username" class="form-input" placeholder="输入用户名或邮箱" required autocomplete="username email">
       </div>
       <div class="form-group">
         <label class="form-label">密码</label>
@@ -57,25 +60,48 @@ body{background:#0f0f0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,
 </div>
 <script>
 (function() {
+  var STORAGE_KEY = 'font_auth_token';
   var params = new URLSearchParams(window.location.search);
   var redirectUrl = params.get('redirect') || '';
   var form = document.getElementById('loginForm');
   var btn  = document.getElementById('loginBtn');
   var err  = document.getElementById('loginError');
+  var suc  = document.getElementById('loginSuccess');
   var switchToRegister = document.getElementById('switchToRegister');
   if (switchToRegister && redirectUrl) {
     switchToRegister.href = '/register.html?redirect=' + encodeURIComponent(redirectUrl);
+  }
+
+  function showError(message) {
+    suc.classList.remove('show');
+    suc.textContent = '';
+    err.textContent = message;
+    err.classList.add('show');
+    btn.textContent = '登 录';
+    btn.disabled = false;
+  }
+
+  function safeJson(response) {
+    return response.text().then(function(text) {
+      var data = {};
+      try { data = text ? JSON.parse(text) : {}; }
+      catch (e) { data = { success:false, message:'返回数据格式错误' }; }
+      data._ok = response.ok;
+      return data;
+    });
   }
 
   form.addEventListener('submit', function(e) {
     e.preventDefault();
     err.classList.remove('show');
     err.textContent = '';
+    suc.classList.remove('show');
+    suc.textContent = '';
     btn.textContent = '登录中...';
     btn.disabled = true;
 
     var fd = new FormData();
-    fd.append('username', form.username.value);
+    fd.append('username', form.username.value.trim());
     fd.append('password', form.password.value);
 
     fetch('/wp-json/font-auth/v1/login', {
@@ -83,23 +109,20 @@ body{background:#0f0f0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,
       body: fd,
       credentials: 'include'
     })
-    .then(function(r) { return r.json(); })
+    .then(safeJson)
     .then(function(data) {
-      if (data.success) {
-        if (data.token) localStorage.setItem('font_auth_token', data.token);
+      if (data && data.logged_in && data.token) {
+        try { localStorage.setItem(STORAGE_KEY, data.token); } catch (e) {}
+        suc.textContent = '登录成功，正在跳转...';
+        suc.classList.add('show');
+        btn.textContent = '登录成功';
         window.location.href = redirectUrl || '/font-index.html';
       } else {
-        err.textContent = data.message || '登录失败，请检查用户名和密码';
-        err.classList.add('show');
-        btn.textContent = '登 录';
-        btn.disabled = false;
+        showError((data && data.message) || '登录失败，请检查用户名、邮箱和密码');
       }
     })
     .catch(function() {
-      err.textContent = '网络错误，请重试';
-      err.classList.add('show');
-      btn.textContent = '登 录';
-      btn.disabled = false;
+      showError('网络错误，请重试');
     });
   });
 })();

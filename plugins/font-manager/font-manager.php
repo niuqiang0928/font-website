@@ -32,6 +32,9 @@ if (!function_exists('fm_get_token_from_request')) {
         if (!empty($_GET['token'])) {
             $token = sanitize_text_field(wp_unslash($_GET['token']));
         }
+        if (empty($token) && !empty($_SERVER['HTTP_X_FONT_AUTH_TOKEN'])) {
+            $token = sanitize_text_field(wp_unslash($_SERVER['HTTP_X_FONT_AUTH_TOKEN']));
+        }
         if (empty($token) && !empty($_SERVER['HTTP_AUTHORIZATION'])) {
             $auth = trim($_SERVER['HTTP_AUTHORIZATION']);
             if (stripos($auth, 'Bearer ') === 0) {
@@ -80,6 +83,14 @@ if (!function_exists('fm_get_authenticated_user')) {
 if (!function_exists('fm_get_protected_download_url')) {
     function fm_get_protected_download_url($font_slug){
         return '/wp-json/font-manager/v1/download/' . rawurlencode($font_slug);
+    }
+}
+
+
+if (!function_exists('fm_font_inline_style')) {
+    function fm_font_inline_style($font_class){
+        $family = str_replace(["\\", "'", '"'], ['\\\\', "\\'", '&quot;'], (string)$font_class);
+        return ' style="font-family:\'' . $family . '\',-apple-system,BlinkMacSystemFont,&quot;Microsoft YaHei&quot;,sans-serif" data-font-family="' . esc_attr($font_class) . '"';
     }
 }
 
@@ -303,13 +314,18 @@ function fm_generate_font_card($f){
     $ext = strtoupper(pathinfo($file,PATHINFO_EXTENSION));
     $detail_url = "/font/".$slug."/";
     $font_url = "/wp-content/uploads/font-upload/".$file;
-    return '<div class="font-card" data-name="'.$name.'" data-cat="'.$cat.'" data-font-url="'.$font_url.'" data-font-class="'.$fclass.'"><a href="'.$detail_url.'" class="card-inner"><div class="font-preview"><div class="preview-main '.$fclass.'">'.$name.'</div><div class="preview-sub">点击查看效果演示</div></div><div class="font-info"><div class="font-title">'.$name.'</div><div class="font-tags"><span class="tag cat-tag">'.$cat.'</span><span class="tag">'.$ext.'</span><span class="tag">'.$size_str.'</span></div></div></a></div>';
+    return '<div class="font-card" data-name="'.$name.'" data-cat="'.$cat.'" data-font-url="'.$font_url.'" data-font-class="'.$fclass.'"><a href="'.$detail_url.'" class="card-inner"><div class="font-preview"><div class="preview-main '.$fclass.'"'.fm_font_inline_style($fclass).'>'.$name.'</div><div class="preview-sub">点击查看效果演示</div></div><div class="font-info"><div class="font-title">'.$name.'</div><div class="font-tags"><span class="tag cat-tag">'.$cat.'</span><span class="tag">'.$ext.'</span><span class="tag">'.$size_str.'</span></div></div></a></div>';
 }
 
 function fm_update_homepage($id, $font){
     $index_path = ABSPATH . "font-index.html";
     if(!file_exists($index_path)) return false;
     $html = file_get_contents($index_path);
+    if (strpos($html, '/wp-content/uploads/font-upload/fonts.css') === false) {
+        $html = str_replace('</title>', '</title>' . "\n<link rel=\"stylesheet\" href=\"/wp-content/uploads/font-upload/fonts.css?v=3\">", $html);
+    } else {
+        $html = preg_replace('#/wp-content/uploads/font-upload/fonts\.css\?v=\d+#', '/wp-content/uploads/font-upload/fonts.css?v=3', $html);
+    }
     $font_card = fm_generate_font_card($font);
     // Check if already exists
     if(strpos($html, $font_card) !== false) return true;
@@ -331,6 +347,11 @@ function fm_regenerate_homepage(){
     $index_path = ABSPATH . "font-index.html";
     if(!file_exists($index_path)) return ["success"=>false,"message"=>"font-index.html not found"];
     $html = file_get_contents($index_path);
+    if (strpos($html, '/wp-content/uploads/font-upload/fonts.css') === false) {
+        $html = str_replace('</title>', '</title>' . "\n<link rel=\"stylesheet\" href=\"/wp-content/uploads/font-upload/fonts.css?v=3\">", $html);
+    } else {
+        $html = preg_replace('#/wp-content/uploads/font-upload/fonts\.css\?v=\d+#', '/wp-content/uploads/font-upload/fonts.css?v=3', $html);
+    }
     $cat_counts = ["all"=>count($fonts)];
     foreach($fonts as $f){
         $cat = $f["category"];
@@ -458,8 +479,8 @@ function fm_generate_detail_page($id,$font_name,$font_slug,$font_file,$font_clas
     .close-modal{position:absolute;top:20px;right:20px;background:none;border:none;color:#666;font-size:24px;cursor:pointer}
     </style>';
     $download_url = fm_get_protected_download_url($font_slug);
-    $preview_html = '<div class="preview-section"><div class="preview-label">字体预览</div><div class="preview-box"><div class="preview-main '.$font_class.'" id="previewText">'.$default_preview.'</div></div><div class="preview-input-wrap"><div class="preview-hint">可自由输入文字预览效果</div><input type="text" class="preview-input" id="previewInput" placeholder="输入任意文字预览效果…" value="'.$default_preview.'"></div></div>';
-    $html = '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>'.$font_name.' - 免费字体下载</title>'.$css.'<link rel="stylesheet" href="/wp-content/uploads/font-upload/fonts.css?v=2"></head><body><header class="header"><a href="/font-index.html" class="logo"><span class="logo-icon">←</span> 免费字体</a><div class="auth-bar" id="authBar"><a href="/login.html" class="auth-link">登录</a><span style="color:#555">|</span><a href="/register.html" class="auth-link">注册</a></div></header><div class="container"><div class="font-detail"><div class="font-header"><div class="font-title">'.$font_name.'</div><div class="font-meta"><span class="tag">'.$category.'</span><span class="tag">'.$ext.'</span><span class="tag">'.$file_size_mb.' MB</span></div></div>'.$preview_html.'<div class="font-info-grid"><div class="info-card"><div class="info-label">字体名称</div><div class="info-value">'.$font_name.'</div></div><div class="info-card"><div class="info-label">字体格式</div><div class="info-value">'.$ext.'</div></div><div class="info-card"><div class="info-label">文件大小</div><div class="info-value">'.$file_size_mb.' MB</div></div><div class="info-card"><div class="info-label">字体分类</div><div class="info-value">'.$category.'</div></div></div><div class="download-section"><button class="download-btn" id="downloadBtn" data-url="'.$download_url.'">↓ 下载字体文件</button></div></div></div><div id="loginModal" class="login-modal"><div class="login-modal-content"><button class="close-modal" onclick="closeLoginModal()">×</button><h3>请先登录</h3><p>登录后才能下载字体文件</p><a href="/login.html" class="login-modal-btn">立即登录</a></div></div><script src="/checkauth.js"></script><script>document.getElementById("previewInput").addEventListener("input",function(){var t=this.value||this.getAttribute("placeholder");document.getElementById("previewText").textContent=t});</script></body></html>';
+    $preview_html = '<div class="preview-section"><div class="preview-label">字体预览</div><div class="preview-box"><div class="preview-main '.$font_class.'" id="previewText"'.fm_font_inline_style($font_class).'>'.$default_preview.'</div></div><div class="preview-input-wrap"><div class="preview-hint">可自由输入文字预览效果</div><input type="text" class="preview-input" id="previewInput" placeholder="输入任意文字预览效果…" value="'.$default_preview.'"></div></div>';
+    $html = '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>'.$font_name.' - 免费字体下载</title>'.$css.'<link rel="stylesheet" href="/wp-content/uploads/font-upload/fonts.css?v=3"></head><body><header class="header"><a href="/font-index.html" class="logo"><span class="logo-icon">←</span> 免费字体</a><div class="auth-bar" id="authBar"><a href="/login.html" class="auth-link">登录</a><span style="color:#555">|</span><a href="/register.html" class="auth-link">注册</a></div></header><div class="container"><div class="font-detail"><div class="font-header"><div class="font-title">'.$font_name.'</div><div class="font-meta"><span class="tag">'.$category.'</span><span class="tag">'.$ext.'</span><span class="tag">'.$file_size_mb.' MB</span></div></div>'.$preview_html.'<div class="font-info-grid"><div class="info-card"><div class="info-label">字体名称</div><div class="info-value">'.$font_name.'</div></div><div class="info-card"><div class="info-label">字体格式</div><div class="info-value">'.$ext.'</div></div><div class="info-card"><div class="info-label">文件大小</div><div class="info-value">'.$file_size_mb.' MB</div></div><div class="info-card"><div class="info-label">字体分类</div><div class="info-value">'.$category.'</div></div></div><div class="download-section"><button class="download-btn" id="downloadBtn" data-url="'.$download_url.'">↓ 下载字体文件</button></div></div></div><div id="loginModal" class="login-modal"><div class="login-modal-content"><button class="close-modal" onclick="closeLoginModal()">×</button><h3>请先登录</h3><p>登录后才能下载字体文件</p><a href="/login.html" class="login-modal-btn">立即登录</a></div></div><script src="/checkauth.js"></script><script>document.getElementById("previewInput").addEventListener("input",function(){var t=this.value||this.getAttribute("placeholder");document.getElementById("previewText").textContent=t});</script></body></html>';
     file_put_contents($slug_dir."/index.html", $html);
     return true;
 }
