@@ -2,7 +2,7 @@
 /*
 Plugin Name: Font Manager
 Description: 字体管理插件 - 上传、分类、生成详情页、自动更新首页
-Version: 1.3
+Version: 1.5
 Author: Manon
 */
 
@@ -87,6 +87,236 @@ if (!function_exists('fm_get_protected_download_url')) {
 }
 
 
+
+if (!function_exists('fm_get_mail_settings_defaults')) {
+    function fm_get_mail_settings_defaults(){
+        return [
+            'smtp_enabled' => 0,
+            'from_email'   => get_option('admin_email'),
+            'from_name'    => get_bloginfo('name') ?: 'Font Gallery',
+            'host'         => '',
+            'port'         => 587,
+            'secure'       => 'tls',
+            'smtp_auth'    => 1,
+            'username'     => '',
+            'password'     => '',
+        ];
+    }
+}
+
+if (!function_exists('fm_get_mail_settings')) {
+    function fm_get_mail_settings(){
+        $defaults = fm_get_mail_settings_defaults();
+        $saved = get_option('font_auth_mail_settings', []);
+        if (!is_array($saved)) {
+            $saved = [];
+        }
+        $settings = wp_parse_args($saved, $defaults);
+        $settings['smtp_enabled'] = !empty($settings['smtp_enabled']) ? 1 : 0;
+        $settings['smtp_auth'] = !empty($settings['smtp_auth']) ? 1 : 0;
+        $settings['from_email'] = sanitize_email((string)$settings['from_email']);
+        $settings['from_name'] = sanitize_text_field((string)$settings['from_name']);
+        $settings['host'] = sanitize_text_field((string)$settings['host']);
+        $settings['port'] = max(1, intval($settings['port']));
+        $settings['secure'] = in_array($settings['secure'], ['', 'tls', 'ssl'], true) ? $settings['secure'] : 'tls';
+        $settings['username'] = sanitize_text_field((string)$settings['username']);
+        $settings['password'] = (string)$settings['password'];
+        return $settings;
+    }
+}
+
+if (!function_exists('fm_save_mail_settings')) {
+    function fm_save_mail_settings($data){
+        $current = fm_get_mail_settings();
+        $settings = [
+            'smtp_enabled' => !empty($data['smtp_enabled']) ? 1 : 0,
+            'from_email'   => sanitize_email($data['from_email'] ?? ''),
+            'from_name'    => sanitize_text_field($data['from_name'] ?? ''),
+            'host'         => sanitize_text_field($data['host'] ?? ''),
+            'port'         => max(1, intval($data['port'] ?? 587)),
+            'secure'       => in_array(($data['secure'] ?? 'tls'), ['', 'tls', 'ssl'], true) ? $data['secure'] : 'tls',
+            'smtp_auth'    => !empty($data['smtp_auth']) ? 1 : 0,
+            'username'     => sanitize_text_field($data['username'] ?? ''),
+            'password'     => isset($data['password']) && $data['password'] !== '' ? (string)$data['password'] : (string)$current['password'],
+        ];
+
+        if (!empty($settings['from_email']) && !is_email($settings['from_email'])) {
+            return new WP_Error('invalid_from_email', '发件邮箱格式不正确');
+        }
+
+        if ($settings['smtp_enabled'] && empty($settings['host'])) {
+            return new WP_Error('missing_host', '已启用 SMTP 时，SMTP 主机不能为空');
+        }
+
+        update_option('font_auth_mail_settings', $settings, false);
+        return $settings;
+    }
+}
+
+if (!function_exists('fm_render_mail_notice')) {
+    function fm_render_mail_notice($type, $message){
+        echo '<div class="notice notice-' . esc_attr($type) . ' is-dismissible"><p>' . esc_html($message) . '</p></div>';
+    }
+}
+
+if (!function_exists('fm_mail_settings_page')) {
+    function fm_mail_settings_page(){
+        if (!current_user_can('manage_options')) {
+            wp_die('需要管理员权限');
+        }
+
+        $notice = null;
+        $notice_type = 'success';
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fm_mail_settings_action'])) {
+            check_admin_referer('fm_mail_settings_action', 'fm_mail_settings_nonce');
+            $action = sanitize_text_field(wp_unslash($_POST['fm_mail_settings_action']));
+
+            if ($action === 'save') {
+                $result = fm_save_mail_settings(wp_unslash($_POST));
+                if (is_wp_error($result)) {
+                    $notice = $result->get_error_message();
+                    $notice_type = 'error';
+                } else {
+                    $notice = '邮箱配置已保存';
+                    $notice_type = 'success';
+                }
+            }
+
+            if ($action === 'test') {
+                $result = fm_save_mail_settings(wp_unslash($_POST));
+                if (is_wp_error($result)) {
+                    $notice = $result->get_error_message();
+                    $notice_type = 'error';
+                } else {
+                    $test_to = sanitize_email($_POST['test_to'] ?? '');
+                    if (!$test_to || !is_email($test_to)) {
+                        $notice = '测试邮箱格式不正确';
+                        $notice_type = 'error';
+                    } else {
+                        $subject = '【' . (get_bloginfo('name') ?: 'Font Gallery') . '】SMTP 测试邮件';
+                        $message = "这是一封后台邮箱配置测试邮件。\n\n发送时间：" . current_time('mysql') . "\n网站：" . home_url('/');
+                        $sent = wp_mail($test_to, $subject, $message);
+                        if ($sent) {
+                            $notice = '测试邮件已发送，请检查收件箱';
+                            $notice_type = 'success';
+                        } else {
+                            $notice = '测试邮件发送失败，请检查 SMTP 配置、端口、防火墙和邮箱授权码';
+                            $notice_type = 'error';
+                        }
+                    }
+                }
+            }
+        }
+
+        $settings = fm_get_mail_settings();
+        ?>
+        <div class="wrap">
+          <h1>邮箱配置</h1>
+          <?php if ($notice) { fm_render_mail_notice($notice_type, $notice); } ?>
+          <style>
+            .fm-mail-wrap{max-width:900px;margin-top:20px}
+            .fm-card{background:#fff;border:1px solid #dcdcde;border-radius:10px;padding:24px;margin-bottom:20px}
+            .fm-card h2{margin:0 0 16px;font-size:20px}
+            .fm-desc{color:#646970;margin:-6px 0 18px;font-size:13px}
+            .fm-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+            .fm-field{margin-bottom:14px}
+            .fm-field label{display:block;font-weight:600;margin-bottom:6px}
+            .fm-field input,.fm-field select{width:100%;padding:9px 10px;border:1px solid #c3c4c7;border-radius:6px}
+            .fm-inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+            .fm-inline label{margin:0;font-weight:500}
+            .fm-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+            .fm-tip{background:#f6f7f7;border-left:4px solid #2271b1;padding:12px 14px;color:#3c434a}
+            @media (max-width: 782px){.fm-grid{grid-template-columns:1fr}}
+          </style>
+          <div class="fm-mail-wrap">
+            <form method="post" class="fm-card">
+              <?php wp_nonce_field('fm_mail_settings_action', 'fm_mail_settings_nonce'); ?>
+              <input type="hidden" name="fm_mail_settings_action" value="save">
+              <h2>SMTP 发信设置</h2>
+              <p class="fm-desc">这里的配置会用于注册验证码邮件和测试邮件发送，不需要额外安装 SMTP 插件。</p>
+              <div class="fm-field fm-inline">
+                <input type="checkbox" id="smtp_enabled" name="smtp_enabled" value="1" <?php checked(!empty($settings['smtp_enabled'])); ?>>
+                <label for="smtp_enabled">启用 SMTP 发信</label>
+              </div>
+              <div class="fm-grid">
+                <div class="fm-field">
+                  <label for="from_name">发件人名称</label>
+                  <input type="text" id="from_name" name="from_name" value="<?php echo esc_attr($settings['from_name']); ?>" placeholder="例如：FONT GALLERY">
+                </div>
+                <div class="fm-field">
+                  <label for="from_email">发件邮箱</label>
+                  <input type="email" id="from_email" name="from_email" value="<?php echo esc_attr($settings['from_email']); ?>" placeholder="例如：noreply@example.com">
+                </div>
+                <div class="fm-field">
+                  <label for="host">SMTP 主机</label>
+                  <input type="text" id="host" name="host" value="<?php echo esc_attr($settings['host']); ?>" placeholder="例如：smtp.qq.com">
+                </div>
+                <div class="fm-field">
+                  <label for="port">端口</label>
+                  <input type="number" id="port" name="port" value="<?php echo esc_attr($settings['port']); ?>" placeholder="587">
+                </div>
+                <div class="fm-field">
+                  <label for="secure">加密方式</label>
+                  <select id="secure" name="secure">
+                    <option value="" <?php selected($settings['secure'], ''); ?>>无</option>
+                    <option value="tls" <?php selected($settings['secure'], 'tls'); ?>>TLS</option>
+                    <option value="ssl" <?php selected($settings['secure'], 'ssl'); ?>>SSL</option>
+                  </select>
+                </div>
+                <div class="fm-field">
+                  <label>&nbsp;</label>
+                  <div class="fm-inline">
+                    <input type="checkbox" id="smtp_auth" name="smtp_auth" value="1" <?php checked(!empty($settings['smtp_auth'])); ?>>
+                    <label for="smtp_auth">需要 SMTP 认证</label>
+                  </div>
+                </div>
+                <div class="fm-field">
+                  <label for="username">SMTP 账号</label>
+                  <input type="text" id="username" name="username" value="<?php echo esc_attr($settings['username']); ?>" placeholder="通常为完整邮箱地址">
+                </div>
+                <div class="fm-field">
+                  <label for="password">SMTP 密码 / 授权码</label>
+                  <input type="password" id="password" name="password" value="" placeholder="留空则保持原密码不变">
+                </div>
+              </div>
+              <div class="fm-actions">
+                <button type="submit" class="button button-primary">保存邮箱配置</button>
+                <a href="<?php echo esc_url(admin_url('admin.php?page=font-manager')); ?>" class="button">返回字体管理</a>
+              </div>
+            </form>
+
+            <form method="post" class="fm-card">
+              <?php wp_nonce_field('fm_mail_settings_action', 'fm_mail_settings_nonce'); ?>
+              <input type="hidden" name="fm_mail_settings_action" value="test">
+              <input type="hidden" name="smtp_enabled" value="<?php echo !empty($settings['smtp_enabled']) ? '1' : '0'; ?>">
+              <input type="hidden" name="from_name" value="<?php echo esc_attr($settings['from_name']); ?>">
+              <input type="hidden" name="from_email" value="<?php echo esc_attr($settings['from_email']); ?>">
+              <input type="hidden" name="host" value="<?php echo esc_attr($settings['host']); ?>">
+              <input type="hidden" name="port" value="<?php echo esc_attr($settings['port']); ?>">
+              <input type="hidden" name="secure" value="<?php echo esc_attr($settings['secure']); ?>">
+              <input type="hidden" name="smtp_auth" value="<?php echo !empty($settings['smtp_auth']) ? '1' : '0'; ?>">
+              <input type="hidden" name="username" value="<?php echo esc_attr($settings['username']); ?>">
+              <input type="hidden" name="password" value="">
+              <h2>测试邮件</h2>
+              <p class="fm-desc">先保存配置，再发测试邮件。若密码留空，将继续使用数据库里已保存的密码。</p>
+              <div class="fm-field">
+                <label for="test_to">测试收件邮箱</label>
+                <input type="email" id="test_to" name="test_to" value="<?php echo esc_attr(get_option('admin_email')); ?>" placeholder="输入测试收件地址">
+              </div>
+              <div class="fm-actions">
+                <button type="submit" class="button button-secondary">发送测试邮件</button>
+              </div>
+              <div class="fm-tip" style="margin-top:16px">
+                常见配置示例：QQ 邮箱通常是 smtp.qq.com + 465/SSL 或 587/TLS；企业邮箱请按服务商提供的 SMTP 主机、端口和授权码填写。
+              </div>
+            </form>
+          </div>
+        </div>
+        <?php
+    }
+}
+
 if (!function_exists('fm_font_inline_style')) {
     function fm_font_inline_style($font_class){
         $family = str_replace(["\\", "'", '"'], ['\\\\', "\\'", '&quot;'], (string)$font_class);
@@ -140,6 +370,7 @@ add_action('rest_api_init', function(){
 
 add_action('admin_menu', function(){
     add_menu_page('字体管理', '字体管理', 'manage_options', 'font-manager', 'fm_admin_page', 'dashicons-art', 80);
+    add_submenu_page('font-manager', '邮箱配置', '邮箱配置', 'manage_options', 'font-mail-settings', 'fm_mail_settings_page');
 });
 
 function fm_admin_page(){
@@ -152,7 +383,7 @@ function fm_admin_page(){
     $cat_list = ["宋体","楷体","黑体","艺术体","像素体","编程字体","英文","其他"];
 ?>
 <div class="wrap">
-<h1>字体管理 <button class="fm-refresh" onclick="fmRegenHomepage()">重新生成首页</button><button class="fm-refresh" onclick="fmRegenDetailPages()" style="background:#3858e9">重新生成全部详情页</button></h1>
+<h1>字体管理 <button class="fm-refresh" onclick="fmRegenHomepage()">重新生成首页</button><button class="fm-refresh" onclick="fmRegenDetailPages()" style="background:#3858e9">重新生成全部详情页</button><a class="fm-refresh" href="<?php echo esc_url(admin_url('admin.php?page=font-mail-settings')); ?>" style="background:#7c3aed;text-decoration:none;display:inline-block;line-height:20px">邮箱配置</a></h1>
 <style>
 .fm-form{background:#fff;padding:20px;border-radius:8px;margin-top:20px;max-width:600px}
 .fm-form h2{font-size:18px;margin-bottom:15px}
