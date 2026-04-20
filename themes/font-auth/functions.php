@@ -116,10 +116,94 @@ if (!function_exists('font_auth_find_user_by_login_input')) {
 
 if (!function_exists('font_auth_mail_from_name')) {
     function font_auth_mail_from_name($name) {
+        $settings = font_auth_get_mail_settings();
+        if (!empty($settings['from_name'])) {
+            return $settings['from_name'];
+        }
         return get_bloginfo('name') ?: 'Font Gallery';
     }
 }
 add_filter('wp_mail_from_name', 'font_auth_mail_from_name');
+
+
+if (!function_exists('font_auth_mail_settings_defaults')) {
+    function font_auth_mail_settings_defaults() {
+        return [
+            'smtp_enabled' => 0,
+            'from_email'   => get_option('admin_email'),
+            'from_name'    => get_bloginfo('name') ?: 'Font Gallery',
+            'host'         => '',
+            'port'         => 587,
+            'secure'       => 'tls',
+            'smtp_auth'    => 1,
+            'username'     => '',
+            'password'     => '',
+        ];
+    }
+}
+
+if (!function_exists('font_auth_get_mail_settings')) {
+    function font_auth_get_mail_settings() {
+        $defaults = font_auth_mail_settings_defaults();
+        $saved = get_option('font_auth_mail_settings', []);
+        if (!is_array($saved)) {
+            $saved = [];
+        }
+
+        $settings = wp_parse_args($saved, $defaults);
+        $settings['smtp_enabled'] = !empty($settings['smtp_enabled']) ? 1 : 0;
+        $settings['smtp_auth'] = !empty($settings['smtp_auth']) ? 1 : 0;
+        $settings['from_email'] = sanitize_email($settings['from_email']);
+        $settings['from_name'] = sanitize_text_field((string) $settings['from_name']);
+        $settings['host'] = sanitize_text_field((string) $settings['host']);
+        $settings['port'] = max(1, intval($settings['port']));
+        $settings['secure'] = in_array($settings['secure'], ['', 'tls', 'ssl'], true) ? $settings['secure'] : 'tls';
+        $settings['username'] = sanitize_text_field((string) $settings['username']);
+        $settings['password'] = (string) $settings['password'];
+        return $settings;
+    }
+}
+
+if (!function_exists('font_auth_mail_from')) {
+    function font_auth_mail_from($email) {
+        $settings = font_auth_get_mail_settings();
+        if (!empty($settings['from_email']) && is_email($settings['from_email'])) {
+            return $settings['from_email'];
+        }
+        return $email;
+    }
+}
+add_filter('wp_mail_from', 'font_auth_mail_from');
+
+if (!function_exists('font_auth_configure_phpmailer')) {
+    function font_auth_configure_phpmailer($phpmailer) {
+        $settings = font_auth_get_mail_settings();
+        if (empty($settings['smtp_enabled']) || empty($settings['host'])) {
+            return;
+        }
+
+        $phpmailer->isSMTP();
+        $phpmailer->Host = $settings['host'];
+        $phpmailer->Port = max(1, intval($settings['port']));
+        $phpmailer->SMTPAuth = !empty($settings['smtp_auth']);
+        $phpmailer->Username = (string) $settings['username'];
+        $phpmailer->Password = (string) $settings['password'];
+        $phpmailer->SMTPSecure = (string) $settings['secure'];
+        $phpmailer->CharSet = 'UTF-8';
+        $phpmailer->Encoding = 'base64';
+
+        if (!empty($settings['from_email']) && is_email($settings['from_email'])) {
+            $from_name = !empty($settings['from_name']) ? $settings['from_name'] : (get_bloginfo('name') ?: 'Font Gallery');
+            try {
+                $phpmailer->setFrom($settings['from_email'], $from_name, false);
+            } catch (Exception $e) {
+                // Ignore and let wp_mail handle errors later.
+            }
+        }
+    }
+}
+add_action('phpmailer_init', 'font_auth_configure_phpmailer');
+
 
 if (!function_exists('font_auth_register_code_key')) {
     function font_auth_register_code_key($email) {
