@@ -25,6 +25,108 @@ register_activation_hook(__FILE__, function(){
     dbDelta($sql);
 });
 
+
+if (!function_exists('fm_get_token_from_request')) {
+    function fm_get_token_from_request(){
+        $token = '';
+        if (!empty($_GET['token'])) {
+            $token = sanitize_text_field(wp_unslash($_GET['token']));
+        }
+        if (empty($token) && !empty($_SERVER['HTTP_AUTHORIZATION'])) {
+            $auth = trim($_SERVER['HTTP_AUTHORIZATION']);
+            if (stripos($auth, 'Bearer ') === 0) {
+                $token = trim(substr($auth, 7));
+            }
+        }
+        return $token;
+    }
+}
+
+if (!function_exists('fm_get_authenticated_user')) {
+    function fm_get_authenticated_user(){
+        if (is_user_logged_in()) {
+            $user = wp_get_current_user();
+            if ($user instanceof WP_User && $user->exists()) {
+                return $user;
+            }
+        }
+
+        $token = fm_get_token_from_request();
+        if (empty($token)) {
+            return false;
+        }
+
+        $parts = explode('|', $token);
+        if (count($parts) !== 3) {
+            return false;
+        }
+
+        $user_id = intval($parts[0]);
+        $expiry  = intval($parts[1]);
+        if ($user_id <= 0 || $expiry < time()) {
+            return false;
+        }
+
+        $stored = get_user_meta($user_id, 'font_auth_token', true);
+        if (!$stored || !hash_equals($stored, $token)) {
+            return false;
+        }
+
+        $user = get_user_by('id', $user_id);
+        return $user instanceof WP_User ? $user : false;
+    }
+}
+
+if (!function_exists('fm_get_protected_download_url')) {
+    function fm_get_protected_download_url($font_slug){
+        return '/wp-json/font-manager/v1/download/' . rawurlencode($font_slug);
+    }
+}
+
+add_action('rest_api_init', function(){
+    register_rest_route('font-manager/v1', '/download/(?P<slug>[A-Za-z0-9._-]+)', [
+        'methods' => 'GET',
+        'callback' => function($request){
+            $user = fm_get_authenticated_user();
+            if (!$user) {
+                return new WP_Error('not_logged_in', '请先登录后再下载字体文件', ['status' => 401]);
+            }
+
+            $slug = sanitize_text_field($request['slug']);
+            global $wpdb;
+            $table = $wpdb->prefix . 'font_manager';
+            $font = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table WHERE font_slug=%s LIMIT 1", $slug), ARRAY_A);
+            if (!$font) {
+                return new WP_Error('font_not_found', '字体不存在', ['status' => 404]);
+            }
+
+            $upload_dir = wp_upload_dir();
+            $file_path = $upload_dir['basedir'] . '/font-upload/' . $font['font_file'];
+            if (!file_exists($file_path) || !is_readable($file_path)) {
+                return new WP_Error('file_not_found', '字体文件不存在', ['status' => 404]);
+            }
+
+            $filetype = wp_check_filetype($font['font_file']);
+            $mime = !empty($filetype['type']) ? $filetype['type'] : 'application/octet-stream';
+            $download_name = basename($font['font_file']);
+
+            while (ob_get_level()) {
+                ob_end_clean();
+            }
+
+            nocache_headers();
+            header('Content-Description: File Transfer');
+            header('Content-Type: ' . $mime);
+            header('Content-Disposition: attachment; filename="' . rawurlencode($download_name) . '"; filename*=UTF-8\'\'' . rawurlencode($download_name));
+            header('Content-Length: ' . filesize($file_path));
+            header('X-Content-Type-Options: nosniff');
+            readfile($file_path);
+            exit;
+        },
+        'permission_callback' => '__return_true',
+    ]);
+});
+
 add_action('admin_menu', function(){
     add_menu_page('字体管理', '字体管理', 'manage_options', 'font-manager', 'fm_admin_page', 'dashicons-art', 80);
 });
@@ -39,7 +141,7 @@ function fm_admin_page(){
     $cat_list = ["宋体","楷体","黑体","艺术体","像素体","编程字体","英文","其他"];
 ?>
 <div class="wrap">
-<h1>字体管理 <button class="fm-refresh" onclick="fmRegenHomepage()">重新生成首页</button></h1>
+<h1>字体管理 <button class="fm-refresh" onclick="fmRegenHomepage()">重新生成首页</button><button class="fm-refresh" onclick="fmRegenDetailPages()" style="background:#3858e9">重新生成全部详情页</button></h1>
 <style>
 .fm-form{background:#fff;padding:20px;border-radius:8px;margin-top:20px;max-width:600px}
 .fm-form h2{font-size:18px;margin-bottom:15px}
@@ -128,6 +230,15 @@ function fmRegenHomepage(){
     })
     .then(r => r.json())
     .then(function(d){ alert(d.success ? "首页已更新 (" + d.total + " 款字体)" : "失败: " + d.message); location.reload(); })
+    .catch(function(e){ alert("错误: " + e); });
+}
+function fmRegenDetailPages(){
+    if(!confirm("确定要重新生成全部详情页吗？")) return;
+    fetch(ajaxurl + "?action=fm_regen_detail_pages", {
+        headers: {"X-Requested-With": "XMLHttpRequest"}
+    })
+    .then(r => r.json())
+    .then(function(d){ alert(d.success ? "详情页已更新 (" + d.total + " 个)" : "失败: " + d.message); if(d.success) location.reload(); })
     .catch(function(e){ alert("错误: " + e); });
 }
 document.querySelectorAll(".fm-delete").forEach(function(el){
@@ -275,6 +386,28 @@ function fm_regenerate_homepage(){
     return ["success"=>true,"total"=>count($fonts),"counts"=>$cat_counts];
 }
 
+
+function fm_regenerate_detail_pages(){
+    global $wpdb;
+    $table = $wpdb->prefix . "font_manager";
+    $fonts = $wpdb->get_results("SELECT * FROM $table ORDER BY id DESC", ARRAY_A);
+    $upload_dir = wp_upload_dir();
+    foreach($fonts as $font){
+        fm_generate_detail_page(
+            intval($font['id']),
+            $font['font_name'],
+            $font['font_slug'],
+            $font['font_file'],
+            $font['font_class'],
+            $font['category'],
+            $font['preview_text'],
+            intval($font['file_size']),
+            $upload_dir['baseurl'] . '/font-upload/' . $font['font_file']
+        );
+    }
+    return ["success"=>true,"total"=>count($fonts)];
+}
+
 function fm_generate_detail_page($id,$font_name,$font_slug,$font_file,$font_class,$category,$preview_text,$file_size,$font_url){
     $slug_dir = ABSPATH."font/".$font_slug;
     if(!is_dir($slug_dir)) mkdir($slug_dir, 0755, true);
@@ -324,7 +457,7 @@ function fm_generate_detail_page($id,$font_name,$font_slug,$font_file,$font_clas
     .login-modal-btn{display:inline-flex;align-items:center;gap:8px;background:#fff;color:#000;padding:12px 32px;border-radius:50px;font-size:15px;font-weight:600;text-decoration:none;margin-bottom:16px}
     .close-modal{position:absolute;top:20px;right:20px;background:none;border:none;color:#666;font-size:24px;cursor:pointer}
     </style>';
-    $download_url = "/wp-content/uploads/font-upload/".$font_file;
+    $download_url = fm_get_protected_download_url($font_slug);
     $preview_html = '<div class="preview-section"><div class="preview-label">字体预览</div><div class="preview-box"><div class="preview-main '.$font_class.'" id="previewText">'.$default_preview.'</div></div><div class="preview-input-wrap"><div class="preview-hint">可自由输入文字预览效果</div><input type="text" class="preview-input" id="previewInput" placeholder="输入任意文字预览效果…" value="'.$default_preview.'"></div></div>';
     $html = '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>'.$font_name.' - 免费字体下载</title>'.$css.'<link rel="stylesheet" href="/wp-content/uploads/font-upload/fonts.css?v=2"></head><body><header class="header"><a href="/font-index.html" class="logo"><span class="logo-icon">←</span> 免费字体</a><div class="auth-bar" id="authBar"><a href="/login.html" class="auth-link">登录</a><span style="color:#555">|</span><a href="/register.html" class="auth-link">注册</a></div></header><div class="container"><div class="font-detail"><div class="font-header"><div class="font-title">'.$font_name.'</div><div class="font-meta"><span class="tag">'.$category.'</span><span class="tag">'.$ext.'</span><span class="tag">'.$file_size_mb.' MB</span></div></div>'.$preview_html.'<div class="font-info-grid"><div class="info-card"><div class="info-label">字体名称</div><div class="info-value">'.$font_name.'</div></div><div class="info-card"><div class="info-label">字体格式</div><div class="info-value">'.$ext.'</div></div><div class="info-card"><div class="info-label">文件大小</div><div class="info-value">'.$file_size_mb.' MB</div></div><div class="info-card"><div class="info-label">字体分类</div><div class="info-value">'.$category.'</div></div></div><div class="download-section"><button class="download-btn" id="downloadBtn" data-url="'.$download_url.'">↓ 下载字体文件</button></div></div></div><div id="loginModal" class="login-modal"><div class="login-modal-content"><button class="close-modal" onclick="closeLoginModal()">×</button><h3>请先登录</h3><p>登录后才能下载字体文件</p><a href="/login.html" class="login-modal-btn">立即登录</a></div></div><script src="/checkauth.js"></script><script>document.getElementById("previewInput").addEventListener("input",function(){var t=this.value||this.getAttribute("placeholder");document.getElementById("previewText").textContent=t});</script></body></html>';
     file_put_contents($slug_dir."/index.html", $html);
@@ -335,6 +468,15 @@ add_action("wp_ajax_fm_regen_homepage", function(){
     header("Content-Type: application/json");
     if(!current_user_can("manage_options")){echo json_encode(["success"=>false,"message"=>"需要管理员权限"]);wp_die();}
     $result = fm_regenerate_homepage();
+    echo json_encode($result);
+    wp_die();
+});
+
+
+add_action("wp_ajax_fm_regen_detail_pages", function(){
+    header("Content-Type: application/json");
+    if(!current_user_can("manage_options")){echo json_encode(["success"=>false,"message"=>"需要管理员权限"]);wp_die();}
+    $result = fm_regenerate_detail_pages();
     echo json_encode($result);
     wp_die();
 });

@@ -23,10 +23,20 @@
     return '/login.html?redirect=' + encodeURIComponent(getRedirectUrl());
   }
 
+  function buildRegisterUrl() {
+    return '/register.html?redirect=' + encodeURIComponent(getRedirectUrl());
+  }
+
   function escapeHtml(str) {
     return String(str || '').replace(/[&<>"']/g, function (m) {
       return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m];
     });
+  }
+
+  function appendToken(url) {
+    var token = getToken();
+    if (!token) return url;
+    return url + (url.indexOf('?') === -1 ? '?' : '&') + 'token=' + encodeURIComponent(token);
   }
 
   function updateAuthBar(user) {
@@ -50,8 +60,9 @@
         });
       }
     } else {
-      var loginUrl = buildLoginUrl();
-      authBar.innerHTML = '<a href="' + loginUrl + '" class="' + linkClass + '">登录</a><span style="color:#555">|</span><a href="/register.html" class="' + linkClass + '">注册</a>';
+      authBar.innerHTML = '<a href="' + buildLoginUrl() + '" class="' + linkClass + '">登录</a>' +
+        '<span style="color:#555">|</span>' +
+        '<a href="' + buildRegisterUrl() + '" class="' + linkClass + '">注册</a>';
     }
   }
 
@@ -63,6 +74,8 @@
     }
     var loginBtn = modal.querySelector('.login-modal-btn');
     if (loginBtn) loginBtn.href = buildLoginUrl();
+    var registerBtn = modal.querySelector('.register-modal-btn');
+    if (registerBtn) registerBtn.href = buildRegisterUrl();
     modal.classList.add('active');
   }
 
@@ -73,14 +86,9 @@
 
   window.closeLoginModal = closeLoginModal;
 
-  function triggerDownload(url) {
+  function triggerProtectedDownload(url) {
     if (!url) return;
-    var a = document.createElement('a');
-    a.href = url;
-    a.setAttribute('download', '');
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    window.location.href = appendToken(url);
   }
 
   function bindDownload(user) {
@@ -94,7 +102,7 @@
         showLoginModal();
         return;
       }
-      triggerDownload(url);
+      triggerProtectedDownload(url);
     });
   }
 
@@ -115,24 +123,21 @@
 
   function checkAuth() {
     var token = getToken();
-    if (!token) {
-      applyAuth(null);
-      return;
-    }
+    var headers = {};
+    if (token) headers.Authorization = 'Bearer ' + token;
 
     fetch('/wp-json/font-auth/v1/me', {
       method: 'GET',
       credentials: 'include',
-      headers: {
-        'Authorization': 'Bearer ' + token
-      }
+      headers: headers
     })
     .then(function (r) { return r.json(); })
     .then(function (data) {
       if (data && data.logged_in) {
+        if (data.token) setToken(data.token);
         applyAuth(data.user || null);
       } else {
-        clearToken();
+        if (token) clearToken();
         applyAuth(null);
       }
     })

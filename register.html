@@ -58,16 +58,22 @@ body{background:#0f0f0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,
       </div>
       <button type="submit" class="form-btn" id="regBtn">立即注册</button>
     </form>
-    <p class="auth-footer">已有账号？<a href="/login.html">立即登录</a></p>
+    <p class="auth-footer">已有账号？<a href="/login.html" id="switchToLogin">立即登录</a></p>
     <p class="wp-site-text"><a href="/font-index.html">← 返回字体下载页</a></p>
   </div>
 </div>
 <script>
 (function() {
+  var params = new URLSearchParams(window.location.search);
+  var redirectUrl = params.get('redirect') || '';
   var form = document.getElementById('regForm');
   var btn  = document.getElementById('regBtn');
   var err  = document.getElementById('regError');
   var suc  = document.getElementById('regSuccess');
+  var switchToLogin = document.getElementById('switchToLogin');
+  if (switchToLogin && redirectUrl) {
+    switchToLogin.href = '/login.html?redirect=' + encodeURIComponent(redirectUrl);
+  }
 
   form.addEventListener('submit', function(e) {
     e.preventDefault();
@@ -95,8 +101,7 @@ body{background:#0f0f0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,
         suc.textContent = '注册成功！正在跳转...';
         suc.classList.add('show');
         btn.textContent = '注册成功！';
-        var redirect = new URLSearchParams(window.location.search).get('redirect') || '/font-index.html';
-        setTimeout(function() { window.location.href = redirect; }, 1000);
+        setTimeout(function() { window.location.href = redirectUrl || '/font-index.html'; }, 1000);
       } else {
         err.textContent = data.message || '注册失败，请重试';
         err.classList.add('show');

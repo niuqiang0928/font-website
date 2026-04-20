@@ -51,15 +51,21 @@ body{background:#0f0f0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,
       </div>
       <button type="submit" class="form-btn" id="loginBtn">登 录</button>
     </form>
-    <p class="auth-footer">还没有账号？<a href="/register.html">立即注册</a></p>
+    <p class="auth-footer">还没有账号？<a href="/register.html" id="switchToRegister">立即注册</a></p>
     <p class="wp-site-text"><a href="/font-index.html">← 返回字体下载页</a></p>
   </div>
 </div>
 <script>
 (function() {
+  var params = new URLSearchParams(window.location.search);
+  var redirectUrl = params.get('redirect') || '';
   var form = document.getElementById('loginForm');
   var btn  = document.getElementById('loginBtn');
   var err  = document.getElementById('loginError');
+  var switchToRegister = document.getElementById('switchToRegister');
+  if (switchToRegister && redirectUrl) {
+    switchToRegister.href = '/register.html?redirect=' + encodeURIComponent(redirectUrl);
+  }
 
   form.addEventListener('submit', function(e) {
     e.preventDefault();
@@ -81,8 +87,7 @@ body{background:#0f0f0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,
     .then(function(data) {
       if (data.success) {
         if (data.token) localStorage.setItem('font_auth_token', data.token);
-        var redirect = new URLSearchParams(window.location.search).get('redirect') || '/font-index.html';
-        window.location.href = redirect;
+        window.location.href = redirectUrl || '/font-index.html';
       } else {
         err.textContent = data.message || '登录失败，请检查用户名和密码';
         err.classList.add('show');
