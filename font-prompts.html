@@ -81,10 +81,6 @@ body{background:#0f0f0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,
 </div>
 <div class="sub-nav" id="subNav">
 <button class="active" data-cat="全部">全部</button>
-<button data-cat="毛笔字">毛笔字</button>
-<button data-cat="活动字">活动字</button>
-<button data-cat="可爱字">可爱字</button>
-<button data-cat="创意字">创意字</button>
 </div>
 <div class="grid" id="grid"></div>
 <div class="load-more hidden" id="loadMore">加载中...</div>
@@ -113,13 +109,22 @@ body{background:#0f0f0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,
  var subNav = document.getElementById('subNav');
  var allItems = {};
 
+ function esc(str){ return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+ function buildCategoryButtons(categories){
+  var html = '<button class="' + (state.category === '全部' ? 'active' : '') + '" data-cat="全部">全部</button>';
+  (categories || []).forEach(function(cat){
+   if(!cat || cat === '全部') return;
+   html += '<button class="' + (state.category === cat ? 'active' : '') + '" data-cat="' + esc(cat) + '">' + esc(cat) + '</button>';
+  });
+  subNav.innerHTML = html;
+ }
+
  function buildCard(item){
-  var tagMap = {'毛笔字':'#d4a','活动字':'#4a9','可爱字':'#a4d','创意字':'#7a4'};
-  var tagColor = tagMap[item.category] || '#888';
   return '<div class="card" onclick="openModal(' + item.id + ')">' +
-   '<div class="card-tag" style="background:' + tagColor + '">' + item.category + '</div>' +
-   '<img src="' + item.image_url + '" alt="" loading="lazy" />' +
-   '<div class="card-body"><p class="card-prompt">' + item.prompt.replace(/</g,'&lt;') + '</p></div></div>';
+   '<div class="card-tag">' + esc(item.category || '其他') + '</div>' +
+   '<img src="' + esc(item.image_url || '') + '" alt="" loading="lazy" />' +
+   '<div class="card-body"><p class="card-prompt">' + esc(item.prompt || '') + '</p></div></div>';
  }
 
  function renderItems(items, append){
@@ -131,7 +136,7 @@ body{background:#0f0f0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,
   }
   grid.style.display = '';
   noResult.style.display = 'none';
-  items.forEach(function(item){ grid.innerHTML += buildCard(item); });
+  items.forEach(function(item){ grid.insertAdjacentHTML('beforeend', buildCard(item)); });
  }
 
  async function loadItems(append){
@@ -141,14 +146,15 @@ body{background:#0f0f0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,
   loadMore.textContent = '加载中...';
   try {
    var params = new URLSearchParams({p:state.page,n:state.perPage});
-   if(state.category && state.category !== '全部') params.set('category', state.category);
-   if(state.search) params.set('search', state.search);
+   if(state.category && state.category !== '全部') params.set('cat', state.category);
+   if(state.search) params.set('q', state.search);
    var res = await fetch('/api-prompts.php?' + params.toString());
    if(!res.ok) throw new Error('Network error');
    var data = await res.json();
+   if(Array.isArray(data.categories)) buildCategoryButtons(data.categories);
    if(data.items){ data.items.forEach(function(item){ allItems[item.id] = item; }); }
    renderItems(data.items || [], append);
-   state.hasMore = data.has_more;
+   state.hasMore = !!data.has_more;
    loadMore.textContent = state.hasMore ? '上滑加载更多' : '— 已加载全部 —';
    if(!state.hasMore) loadMore.classList.add('hidden');
   } catch(e){
@@ -229,6 +235,7 @@ body{background:#0f0f0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,
   });
  };
 
+ buildCategoryButtons([]);
  loadItems(false);
 })();
 </script>

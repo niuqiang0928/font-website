@@ -8,8 +8,8 @@ mysqli_set_charset($db, 'utf8mb4');
 
 $p = isset($_GET['p']) ? max(1, intval($_GET['p'])) : 1;
 $n = isset($_GET['n']) ? min(48, intval($_GET['n'] ?? 9)) : 9;
-$cat = isset($_GET['cat']) ? trim($_GET['cat']) : '';
-$q = isset($_GET['q']) ? trim($_GET['q']) : '';
+$cat = isset($_GET['cat']) ? trim($_GET['cat']) : (isset($_GET['category']) ? trim($_GET['category']) : '');
+$q = isset($_GET['q']) ? trim($_GET['q']) : (isset($_GET['search']) ? trim($_GET['search']) : '');
 $offset = ($p - 1) * $n;
 
 $where = '1=1';
@@ -37,5 +37,13 @@ $cnt_res = mysqli_query($db, $cnt_sql);
 $total = mysqli_fetch_row($cnt_res)[0];
 $has_more = ($offset + $n) < $total;
 
+$categories = [];
+$cat_res = mysqli_query($db, "SELECT DISTINCT category FROM wp_font_prompts WHERE category IS NOT NULL AND category<>'' ORDER BY category ASC");
+if ($cat_res) {
+    while ($row = mysqli_fetch_assoc($cat_res)) {
+        $categories[] = $row['category'];
+    }
+}
+
 mysqli_close($db);
-echo json_encode(['total'=>$total,'page'=>$p,'per_page'=>$n,'has_more'=>$has_more,'items'=>$items], JSON_UNESCAPED_UNICODE);
+echo json_encode(['total'=>$total,'page'=>$p,'per_page'=>$n,'has_more'=>$has_more,'items'=>$items,'categories'=>$categories], JSON_UNESCAPED_UNICODE);

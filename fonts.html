@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>免费字体 - 免费字体下载</title>
+<link rel="stylesheet" href="/wp-content/uploads/font-upload/fonts.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#0f0f0f;font-family:-apple-system,BlinkMacSystemFont,"Microsoft YaHei",sans-serif;color:#fff}
@@ -83,16 +84,24 @@ body{background:#0f0f0f;font-family:-apple-system,BlinkMacSystemFont,"Microsoft 
  var searchInput=document.getElementById('searchInput');
  var noMore=document.getElementById('noMore');
 
+ function escapeHtml(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+ }
+ function escapeFontFamily(s){
+  return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+ }
+
  function renderFonts(fonts){
   if(!fonts.length){grid.innerHTML='<div class=placeholder-block>暂无字体</div>';noMore.style.display='none';return;}
   grid.innerHTML='';
   fonts.forEach(function(f){
    var preview=f.preview_text||f.font_name||'字体';
    var fname=f.font_name||preview;
+   var family=escapeFontFamily(f.font_class||'');
    grid.innerHTML+='<div class=font-item onclick="location.href=\'/font/'+f.font_slug+'/index.html\'">'+
-    '<div class=font-preview style="font-family:\''+f.font_class+'\'">'+preview+'</div>'+
-    '<div class=font-name>'+fname+'</div>'+
-    '<div class=font-cat>'+(f.category||'')+'</div></div>';
+    '<div class="font-preview '+escapeHtml(f.font_class||'')+'" data-font-family="'+escapeHtml(f.font_class||'')+'" style="font-family:\''+family+'\',-apple-system,BlinkMacSystemFont,\'Microsoft YaHei\',sans-serif">'+escapeHtml(preview)+'</div>'+
+    '<div class=font-name>'+escapeHtml(fname)+'</div>'+
+    '<div class=font-cat>'+escapeHtml(f.category||'')+'</div></div>';
   });
   noMore.style.display='block';
  }
