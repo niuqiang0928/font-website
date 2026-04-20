@@ -2,7 +2,7 @@
 /*
 Plugin Name: Font Manager
 Description: 字体管理插件 - 上传、分类、生成详情页、自动更新首页
-Version: 1.5
+Version: 1.6
 Author: Manon
 */
 
@@ -123,7 +123,66 @@ if (!function_exists('fm_get_mail_settings')) {
         $settings['password'] = (string)$settings['password'];
         return $settings;
     }
+
+
+if (!function_exists('fm_mail_from')) {
+    function fm_mail_from($email){
+        $settings = fm_get_mail_settings();
+        if (!empty($settings['from_email']) && is_email($settings['from_email'])) {
+            return $settings['from_email'];
+        }
+        return $email;
+    }
 }
+add_filter('wp_mail_from', 'fm_mail_from');
+
+if (!function_exists('fm_mail_from_name')) {
+    function fm_mail_from_name($name){
+        $settings = fm_get_mail_settings();
+        if (!empty($settings['from_name'])) {
+            return $settings['from_name'];
+        }
+        return $name;
+    }
+}
+add_filter('wp_mail_from_name', 'fm_mail_from_name');
+
+if (!function_exists('fm_configure_phpmailer')) {
+    function fm_configure_phpmailer($phpmailer){
+        $settings = fm_get_mail_settings();
+        if (empty($settings['smtp_enabled']) || empty($settings['host'])) {
+            return;
+        }
+
+        $phpmailer->isSMTP();
+        $phpmailer->Host = (string) $settings['host'];
+        $phpmailer->Port = max(1, intval($settings['port']));
+        $phpmailer->SMTPAuth = !empty($settings['smtp_auth']);
+        $phpmailer->Username = (string) $settings['username'];
+        $phpmailer->Password = (string) $settings['password'];
+        $phpmailer->CharSet = 'UTF-8';
+        $phpmailer->Encoding = 'base64';
+        $phpmailer->Timeout = 20;
+        $phpmailer->SMTPAutoTLS = false;
+
+        $secure = (string) $settings['secure'];
+        if (in_array($secure, ['tls', 'ssl'], true)) {
+            $phpmailer->SMTPSecure = $secure;
+        } else {
+            $phpmailer->SMTPSecure = '';
+        }
+
+        if (!empty($settings['from_email']) && is_email($settings['from_email'])) {
+            $from_name = !empty($settings['from_name']) ? $settings['from_name'] : (get_bloginfo('name') ?: 'Font Gallery');
+            try {
+                $phpmailer->setFrom($settings['from_email'], $from_name, false);
+            } catch (Exception $e) {
+                // Let wp_mail_failed expose the transport error.
+            }
+        }
+    }
+}
+add_action('phpmailer_init', 'fm_configure_phpmailer');
 
 if (!function_exists('fm_save_mail_settings')) {
     function fm_save_mail_settings($data){
