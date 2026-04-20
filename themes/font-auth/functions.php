@@ -429,39 +429,6 @@ add_action('rest_api_init', function() {
         'permission_callback' => '__return_true',
     ]);
 
-
-    register_rest_route("font-prompts/v1", "/list", [
-        "methods" => "GET",
-        "callback" => function($request){
-            global $wpdb;
-            $table = $wpdb->prefix . "font_prompts";
-            $per_page = max(1, intval($request->get_param("per_page") ?: 6));
-            $page = max(1, intval($request->get_param("page") ?: 1));
-            $offset = ($page - 1) * $per_page;
-            $category = sanitize_text_field($request->get_param("category") ?: "");
-            $search = sanitize_text_field($request->get_param("search") ?: "");
-
-            $where = "1=1";
-            if($category && $category !== "全部") $where .= $wpdb->prepare(" AND category=%s", $category);
-            if($search) $where .= $wpdb->prepare(" AND prompt LIKE %s", "%" . $wpdb->esc_like($search) . "%");
-
-            $total = $wpdb->get_var("SELECT COUNT(*) FROM $table WHERE $where");
-            $rows = $wpdb->get_results($wpdb->prepare(
-                "SELECT * FROM $table WHERE $where ORDER BY id DESC LIMIT %d OFFSET %d",
-                $per_page, $offset
-            ), ARRAY_A);
-
-            return [
-                "total" => intval($total),
-                "page" => $page,
-                "per_page" => $per_page,
-                "has_more" => (($offset + count($rows)) < $total),
-                "items" => $rows
-            ];
-        },
-        "permission_callback" => "__return_true"
-    ]);
-
 });
 
 add_action('after_switch_theme', function() {

@@ -2,7 +2,7 @@
 /*
 Plugin Name: Font Manager
 Description: 字体管理插件 - 上传、分类、生成详情页、自动更新首页
-Version: 1.3
+Version: 1.6
 Author: Manon
 */
 
@@ -25,8 +25,562 @@ register_activation_hook(__FILE__, function(){
     dbDelta($sql);
 });
 
+
+if (!function_exists('fm_get_token_from_request')) {
+    function fm_get_token_from_request(){
+        $token = '';
+        if (!empty($_GET['token'])) {
+            $token = sanitize_text_field(wp_unslash($_GET['token']));
+        }
+        if (empty($token) && !empty($_SERVER['HTTP_X_FONT_AUTH_TOKEN'])) {
+            $token = sanitize_text_field(wp_unslash($_SERVER['HTTP_X_FONT_AUTH_TOKEN']));
+        }
+        if (empty($token) && !empty($_SERVER['HTTP_AUTHORIZATION'])) {
+            $auth = trim($_SERVER['HTTP_AUTHORIZATION']);
+            if (stripos($auth, 'Bearer ') === 0) {
+                $token = trim(substr($auth, 7));
+            }
+        }
+        return $token;
+    }
+}
+
+if (!function_exists('fm_get_authenticated_user')) {
+    function fm_get_authenticated_user(){
+        if (is_user_logged_in()) {
+            $user = wp_get_current_user();
+            if ($user instanceof WP_User && $user->exists()) {
+                return $user;
+            }
+        }
+
+        $token = fm_get_token_from_request();
+        if (empty($token)) {
+            return false;
+        }
+
+        $parts = explode('|', $token);
+        if (count($parts) !== 3) {
+            return false;
+        }
+
+        $user_id = intval($parts[0]);
+        $expiry  = intval($parts[1]);
+        if ($user_id <= 0 || $expiry < time()) {
+            return false;
+        }
+
+        $stored = get_user_meta($user_id, 'font_auth_token', true);
+        if (!$stored || !hash_equals($stored, $token)) {
+            return false;
+        }
+
+        $user = get_user_by('id', $user_id);
+        return $user instanceof WP_User ? $user : false;
+    }
+}
+
+if (!function_exists('fm_get_protected_download_url')) {
+    function fm_get_protected_download_url($font_slug){
+        return '/wp-json/font-manager/v1/download/' . rawurlencode($font_slug);
+    }
+}
+
+
+
+if (!function_exists('fm_get_mail_settings_defaults')) {
+    function fm_get_mail_settings_defaults(){
+        return [
+            'smtp_enabled' => 0,
+            'from_email'   => get_option('admin_email'),
+            'from_name'    => get_bloginfo('name') ?: 'Font Gallery',
+            'host'         => '',
+            'port'         => 587,
+            'secure'       => 'tls',
+            'smtp_auth'    => 1,
+            'username'     => '',
+            'password'     => '',
+        ];
+    }
+}
+
+if (!function_exists('fm_get_mail_settings')) {
+    function fm_get_mail_settings(){
+        $defaults = fm_get_mail_settings_defaults();
+        $saved = get_option('font_auth_mail_settings', []);
+        if (!is_array($saved)) {
+            $saved = [];
+        }
+        $settings = wp_parse_args($saved, $defaults);
+        $settings['smtp_enabled'] = !empty($settings['smtp_enabled']) ? 1 : 0;
+        $settings['smtp_auth'] = !empty($settings['smtp_auth']) ? 1 : 0;
+        $settings['from_email'] = sanitize_email((string)$settings['from_email']);
+        $settings['from_name'] = sanitize_text_field((string)$settings['from_name']);
+        $settings['host'] = sanitize_text_field((string)$settings['host']);
+        $settings['port'] = max(1, intval($settings['port']));
+        $settings['secure'] = in_array($settings['secure'], ['', 'tls', 'ssl'], true) ? $settings['secure'] : 'tls';
+        $settings['username'] = sanitize_text_field((string)$settings['username']);
+        $settings['password'] = (string)$settings['password'];
+        return $settings;
+    }
+
+
+if (!function_exists('fm_mail_from')) {
+    function fm_mail_from($email){
+        $settings = fm_get_mail_settings();
+        if (!empty($settings['from_email']) && is_email($settings['from_email'])) {
+            return $settings['from_email'];
+        }
+        return $email;
+    }
+}
+add_filter('wp_mail_from', 'fm_mail_from');
+
+if (!function_exists('fm_mail_from_name')) {
+    function fm_mail_from_name($name){
+        $settings = fm_get_mail_settings();
+        if (!empty($settings['from_name'])) {
+            return $settings['from_name'];
+        }
+        return $name;
+    }
+}
+add_filter('wp_mail_from_name', 'fm_mail_from_name');
+
+if (!function_exists('fm_configure_phpmailer')) {
+    function fm_configure_phpmailer($phpmailer){
+        $settings = fm_get_mail_settings();
+        if (empty($settings['smtp_enabled']) || empty($settings['host'])) {
+            return;
+        }
+
+        $phpmailer->isSMTP();
+        $phpmailer->Host = (string) $settings['host'];
+        $phpmailer->Port = max(1, intval($settings['port']));
+        $phpmailer->SMTPAuth = !empty($settings['smtp_auth']);
+        $phpmailer->Username = (string) $settings['username'];
+        $phpmailer->Password = (string) $settings['password'];
+        $phpmailer->CharSet = 'UTF-8';
+        $phpmailer->Encoding = 'base64';
+        $phpmailer->Timeout = 20;
+        $phpmailer->SMTPAutoTLS = false;
+
+        $secure = (string) $settings['secure'];
+        if (in_array($secure, ['tls', 'ssl'], true)) {
+            $phpmailer->SMTPSecure = $secure;
+        } else {
+            $phpmailer->SMTPSecure = '';
+        }
+
+        if (!empty($settings['from_email']) && is_email($settings['from_email'])) {
+            $from_name = !empty($settings['from_name']) ? $settings['from_name'] : (get_bloginfo('name') ?: 'Font Gallery');
+            try {
+                $phpmailer->setFrom($settings['from_email'], $from_name, false);
+            } catch (Exception $e) {
+                // Let wp_mail_failed expose the transport error.
+            }
+        }
+    }
+}
+add_action('phpmailer_init', 'fm_configure_phpmailer');
+
+if (!function_exists('fm_save_mail_settings')) {
+    function fm_save_mail_settings($data){
+        $current = fm_get_mail_settings();
+        $settings = [
+            'smtp_enabled' => !empty($data['smtp_enabled']) ? 1 : 0,
+            'from_email'   => sanitize_email($data['from_email'] ?? ''),
+            'from_name'    => sanitize_text_field($data['from_name'] ?? ''),
+            'host'         => sanitize_text_field($data['host'] ?? ''),
+            'port'         => max(1, intval($data['port'] ?? 587)),
+            'secure'       => in_array(($data['secure'] ?? 'tls'), ['', 'tls', 'ssl'], true) ? $data['secure'] : 'tls',
+            'smtp_auth'    => !empty($data['smtp_auth']) ? 1 : 0,
+            'username'     => sanitize_text_field($data['username'] ?? ''),
+            'password'     => isset($data['password']) && $data['password'] !== '' ? (string)$data['password'] : (string)$current['password'],
+        ];
+
+        if (!empty($settings['from_email']) && !is_email($settings['from_email'])) {
+            return new WP_Error('invalid_from_email', '发件邮箱格式不正确');
+        }
+
+        if ($settings['smtp_enabled'] && empty($settings['host'])) {
+            return new WP_Error('missing_host', '已启用 SMTP 时，SMTP 主机不能为空');
+        }
+
+        update_option('font_auth_mail_settings', $settings, false);
+        return $settings;
+    }
+}
+
+if (!function_exists('fm_render_mail_notice')) {
+    function fm_render_mail_notice($type, $message){
+        echo '<div class="notice notice-' . esc_attr($type) . ' is-dismissible"><p>' . esc_html($message) . '</p></div>';
+    }
+}
+
+if (!function_exists('fm_capture_mail_failed')) {
+    function fm_capture_mail_failed($wp_error){
+        $GLOBALS['fm_last_mail_error'] = $wp_error instanceof WP_Error ? $wp_error->get_error_message() : '';
+    }
+}
+
+if (!function_exists('fm_send_test_mail')) {
+    function fm_send_test_mail($test_to){
+        $test_to = sanitize_email((string)$test_to);
+        if (!$test_to || !is_email($test_to)) {
+            return new WP_Error('invalid_test_email', '测试邮箱格式不正确');
+        }
+
+        $subject = '【' . (get_bloginfo('name') ?: 'Font Gallery') . '】SMTP 测试邮件';
+        $message = "这是一封后台邮箱配置测试邮件。\n\n发送时间：" . current_time('mysql') . "\n网站：" . home_url('/');
+
+        $GLOBALS['fm_last_mail_error'] = '';
+        add_action('wp_mail_failed', 'fm_capture_mail_failed', 10, 1);
+        $sent = wp_mail($test_to, $subject, $message);
+        remove_action('wp_mail_failed', 'fm_capture_mail_failed', 10);
+
+        if ($sent) {
+            return [
+                'success' => true,
+                'message' => '测试邮件已发送，请检查收件箱',
+            ];
+        }
+
+        $detail = !empty($GLOBALS['fm_last_mail_error']) ? '：' . $GLOBALS['fm_last_mail_error'] : '';
+        return new WP_Error('mail_failed', '测试邮件发送失败，请检查 SMTP 配置、端口、防火墙和邮箱授权码' . $detail);
+    }
+}
+
+if (!function_exists('fm_mail_settings_page')) {
+    function fm_mail_settings_page(){
+        if (!current_user_can('manage_options')) {
+            wp_die('需要管理员权限');
+        }
+
+        $notice = null;
+        $notice_type = 'success';
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fm_mail_settings_action'])) {
+            check_admin_referer('fm_mail_settings_action', 'fm_mail_settings_nonce');
+            $action = sanitize_text_field(wp_unslash($_POST['fm_mail_settings_action']));
+
+            if ($action === 'save') {
+                $result = fm_save_mail_settings(wp_unslash($_POST));
+                if (is_wp_error($result)) {
+                    $notice = $result->get_error_message();
+                    $notice_type = 'error';
+                } else {
+                    $notice = '邮箱配置已保存';
+                    $notice_type = 'success';
+                }
+            }
+
+            if ($action === 'test') {
+                $result = fm_save_mail_settings(wp_unslash($_POST));
+                if (is_wp_error($result)) {
+                    $notice = $result->get_error_message();
+                    $notice_type = 'error';
+                } else {
+                    $test_to = sanitize_email($_POST['test_to'] ?? '');
+                    if (!$test_to || !is_email($test_to)) {
+                        $notice = '测试邮箱格式不正确';
+                        $notice_type = 'error';
+                    } else {
+                        $mail_result = fm_send_test_mail($test_to);
+                        if (is_wp_error($mail_result)) {
+                            $notice = $mail_result->get_error_message();
+                            $notice_type = 'error';
+                        } else {
+                            $notice = $mail_result['message'];
+                            $notice_type = 'success';
+                        }
+                    }
+                }
+            }
+        }
+
+        $settings = fm_get_mail_settings();
+        ?>
+        <div class="wrap">
+          <h1>邮箱配置</h1>
+          <?php if ($notice) { fm_render_mail_notice($notice_type, $notice); } ?>
+          <style>
+            .fm-mail-wrap{max-width:900px;margin-top:20px}
+            .fm-card{background:#fff;border:1px solid #dcdcde;border-radius:10px;padding:24px;margin-bottom:20px}
+            .fm-card h2{margin:0 0 16px;font-size:20px}
+            .fm-desc{color:#646970;margin:-6px 0 18px;font-size:13px}
+            .fm-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+            .fm-field{margin-bottom:14px}
+            .fm-field label{display:block;font-weight:600;margin-bottom:6px}
+            .fm-field input,.fm-field select{width:100%;padding:9px 10px;border:1px solid #c3c4c7;border-radius:6px}
+            .fm-inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+            .fm-inline label{margin:0;font-weight:500}
+            .fm-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+            .fm-tip{background:#f6f7f7;border-left:4px solid #2271b1;padding:12px 14px;color:#3c434a}
+            @media (max-width: 782px){.fm-grid{grid-template-columns:1fr}}
+          </style>
+          <div class="fm-mail-wrap">
+            <div id="fm-mail-status"></div>
+            <form method="post" class="fm-card" id="fm-mail-save-form">
+              <?php wp_nonce_field('fm_mail_settings_action', 'fm_mail_settings_nonce'); ?>
+              <input type="hidden" name="fm_mail_settings_action" value="save">
+              <h2>SMTP 发信设置</h2>
+              <p class="fm-desc">这里的配置会用于注册验证码邮件和测试邮件发送，不需要额外安装 SMTP 插件。</p>
+              <div class="fm-field fm-inline">
+                <input type="checkbox" id="smtp_enabled" name="smtp_enabled" value="1" <?php checked(!empty($settings['smtp_enabled'])); ?>>
+                <label for="smtp_enabled">启用 SMTP 发信</label>
+              </div>
+              <div class="fm-grid">
+                <div class="fm-field">
+                  <label for="from_name">发件人名称</label>
+                  <input type="text" id="from_name" name="from_name" value="<?php echo esc_attr($settings['from_name']); ?>" placeholder="例如：FONT GALLERY">
+                </div>
+                <div class="fm-field">
+                  <label for="from_email">发件邮箱</label>
+                  <input type="email" id="from_email" name="from_email" value="<?php echo esc_attr($settings['from_email']); ?>" placeholder="例如：noreply@example.com">
+                </div>
+                <div class="fm-field">
+                  <label for="host">SMTP 主机</label>
+                  <input type="text" id="host" name="host" value="<?php echo esc_attr($settings['host']); ?>" placeholder="例如：smtp.qq.com">
+                </div>
+                <div class="fm-field">
+                  <label for="port">端口</label>
+                  <input type="number" id="port" name="port" value="<?php echo esc_attr($settings['port']); ?>" placeholder="587">
+                </div>
+                <div class="fm-field">
+                  <label for="secure">加密方式</label>
+                  <select id="secure" name="secure">
+                    <option value="" <?php selected($settings['secure'], ''); ?>>无</option>
+                    <option value="tls" <?php selected($settings['secure'], 'tls'); ?>>TLS</option>
+                    <option value="ssl" <?php selected($settings['secure'], 'ssl'); ?>>SSL</option>
+                  </select>
+                </div>
+                <div class="fm-field">
+                  <label>&nbsp;</label>
+                  <div class="fm-inline">
+                    <input type="checkbox" id="smtp_auth" name="smtp_auth" value="1" <?php checked(!empty($settings['smtp_auth'])); ?>>
+                    <label for="smtp_auth">需要 SMTP 认证</label>
+                  </div>
+                </div>
+                <div class="fm-field">
+                  <label for="username">SMTP 账号</label>
+                  <input type="text" id="username" name="username" value="<?php echo esc_attr($settings['username']); ?>" placeholder="通常为完整邮箱地址">
+                </div>
+                <div class="fm-field">
+                  <label for="password">SMTP 密码 / 授权码</label>
+                  <input type="password" id="password" name="password" value="" placeholder="留空则保持原密码不变">
+                </div>
+              </div>
+              <div class="fm-actions">
+                <button type="submit" class="button button-primary" id="fm-save-mail-btn">保存邮箱配置</button>
+                <a href="<?php echo esc_url(admin_url('admin.php?page=font-manager')); ?>" class="button">返回字体管理</a>
+              </div>
+            </form>
+
+            <form method="post" class="fm-card" id="fm-mail-test-form">
+              <?php wp_nonce_field('fm_mail_settings_action', 'fm_mail_settings_nonce'); ?>
+              <input type="hidden" name="fm_mail_settings_action" value="test">
+              <input type="hidden" name="smtp_enabled" value="<?php echo !empty($settings['smtp_enabled']) ? '1' : '0'; ?>">
+              <input type="hidden" name="from_name" value="<?php echo esc_attr($settings['from_name']); ?>">
+              <input type="hidden" name="from_email" value="<?php echo esc_attr($settings['from_email']); ?>">
+              <input type="hidden" name="host" value="<?php echo esc_attr($settings['host']); ?>">
+              <input type="hidden" name="port" value="<?php echo esc_attr($settings['port']); ?>">
+              <input type="hidden" name="secure" value="<?php echo esc_attr($settings['secure']); ?>">
+              <input type="hidden" name="smtp_auth" value="<?php echo !empty($settings['smtp_auth']) ? '1' : '0'; ?>">
+              <input type="hidden" name="username" value="<?php echo esc_attr($settings['username']); ?>">
+              <input type="hidden" name="password" value="">
+              <h2>测试邮件</h2>
+              <p class="fm-desc">先保存配置，再发测试邮件。若密码留空，将继续使用数据库里已保存的密码。</p>
+              <div class="fm-field">
+                <label for="test_to">测试收件邮箱</label>
+                <input type="email" id="test_to" name="test_to" value="<?php echo esc_attr(get_option('admin_email')); ?>" placeholder="输入测试收件地址">
+              </div>
+              <div class="fm-actions">
+                <button type="submit" class="button button-secondary" id="fm-test-mail-btn">发送测试邮件</button>
+              </div>
+              <div class="fm-tip" style="margin-top:16px">
+                常见配置示例：QQ 邮箱通常是 smtp.qq.com + 465/SSL 或 587/TLS；企业邮箱请按服务商提供的 SMTP 主机、端口和授权码填写。
+              </div>
+            </form>
+          </div>
+          <script>
+          (function(){
+            var saveForm = document.getElementById('fm-mail-save-form');
+            var testForm = document.getElementById('fm-mail-test-form');
+            var statusBox = document.getElementById('fm-mail-status');
+            if(!saveForm || !testForm || !statusBox || typeof ajaxurl === 'undefined') return;
+
+            function showStatus(type, message){
+              statusBox.innerHTML = '<div class="notice notice-' + type + ' is-dismissible"><p>' + message + '</p></div>';
+              try { window.scrollTo({top: 0, behavior: 'smooth'}); } catch (e) { window.scrollTo(0,0); }
+            }
+
+            function setLoading(btn, text, isLoading){
+              if(!btn) return;
+              if(isLoading){
+                btn.dataset.originalText = btn.dataset.originalText || btn.textContent;
+                btn.textContent = text;
+                btn.disabled = true;
+              } else {
+                btn.textContent = btn.dataset.originalText || btn.textContent;
+                btn.disabled = false;
+              }
+            }
+
+            function syncTestHiddenFields(){
+              var saveData = new FormData(saveForm);
+              ['smtp_enabled','from_name','from_email','host','port','secure','smtp_auth','username','password'].forEach(function(key){
+                var hidden = testForm.querySelector('input[name="' + key + '"]');
+                if(!hidden) return;
+                if(key === 'smtp_enabled' || key === 'smtp_auth'){
+                  hidden.value = saveData.get(key) ? '1' : '0';
+                } else {
+                  hidden.value = saveData.get(key) || '';
+                }
+              });
+            }
+
+            async function submitAjax(type, payload, btn, fallbackForm){
+              setLoading(btn, type === 'save' ? '保存中...' : '发送中...', true);
+              try {
+                var res = await fetch(ajaxurl, {
+                  method: 'POST',
+                  credentials: 'same-origin',
+                  headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+                  body: new URLSearchParams(payload).toString()
+                });
+                var data = await res.json();
+                if(data && data.success){
+                  showStatus('success', data.data && data.data.message ? data.data.message : '操作成功');
+                  if(type === 'save') syncTestHiddenFields();
+                } else {
+                  var msg = data && data.data && data.data.message ? data.data.message : '操作失败';
+                  showStatus('error', msg);
+                }
+              } catch (err) {
+                if (fallbackForm) {
+                  fallbackForm.submit();
+                  return;
+                }
+                showStatus('error', '请求失败：' + (err && err.message ? err.message : '未知错误'));
+              } finally {
+                setLoading(btn, '', false);
+              }
+            }
+
+            saveForm.addEventListener('submit', function(e){
+              e.preventDefault();
+              var btn = document.getElementById('fm-save-mail-btn');
+              var payload = new FormData(saveForm);
+              payload.append('action', 'fm_save_mail_settings');
+              payload.append('nonce', saveForm.querySelector('input[name="fm_mail_settings_nonce"]').value);
+              submitAjax('save', payload, btn, saveForm);
+            });
+
+            testForm.addEventListener('submit', function(e){
+              e.preventDefault();
+              syncTestHiddenFields();
+              var btn = document.getElementById('fm-test-mail-btn');
+              var payload = new FormData(testForm);
+              payload.append('action', 'fm_send_test_mail');
+              payload.append('nonce', testForm.querySelector('input[name="fm_mail_settings_nonce"]').value);
+              submitAjax('test', payload, btn, testForm);
+            });
+          })();
+          </script>
+        </div>
+        <?php
+    }
+}
+
+if (!function_exists('fm_font_inline_style')) {
+    function fm_font_inline_style($font_class){
+        $family = str_replace(["\\", "'", '"'], ['\\\\', "\\'", '&quot;'], (string)$font_class);
+        return ' style="font-family:\'' . $family . '\',-apple-system,BlinkMacSystemFont,&quot;Microsoft YaHei&quot;,sans-serif" data-font-family="' . esc_attr($font_class) . '"';
+    }
+}
+
+
+add_action('wp_ajax_fm_save_mail_settings', function(){
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(['message' => '需要管理员权限'], 403);
+    }
+
+    check_ajax_referer('fm_mail_settings_action', 'nonce');
+    $result = fm_save_mail_settings(wp_unslash($_POST));
+    if (is_wp_error($result)) {
+        wp_send_json_error(['message' => $result->get_error_message()], 400);
+    }
+
+    wp_send_json_success(['message' => '邮箱配置已保存']);
+});
+
+add_action('wp_ajax_fm_send_test_mail', function(){
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(['message' => '需要管理员权限'], 403);
+    }
+
+    check_ajax_referer('fm_mail_settings_action', 'nonce');
+    $saved = fm_save_mail_settings(wp_unslash($_POST));
+    if (is_wp_error($saved)) {
+        wp_send_json_error(['message' => $saved->get_error_message()], 400);
+    }
+
+    $result = fm_send_test_mail($_POST['test_to'] ?? '');
+    if (is_wp_error($result)) {
+        wp_send_json_error(['message' => $result->get_error_message()], 400);
+    }
+
+    wp_send_json_success(['message' => $result['message']]);
+});
+
+add_action('rest_api_init', function(){
+    register_rest_route('font-manager/v1', '/download/(?P<slug>[A-Za-z0-9._-]+)', [
+        'methods' => 'GET',
+        'callback' => function($request){
+            $user = fm_get_authenticated_user();
+            if (!$user) {
+                return new WP_Error('not_logged_in', '请先登录后再下载字体文件', ['status' => 401]);
+            }
+
+            $slug = sanitize_text_field($request['slug']);
+            global $wpdb;
+            $table = $wpdb->prefix . 'font_manager';
+            $font = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table WHERE font_slug=%s LIMIT 1", $slug), ARRAY_A);
+            if (!$font) {
+                return new WP_Error('font_not_found', '字体不存在', ['status' => 404]);
+            }
+
+            $upload_dir = wp_upload_dir();
+            $file_path = $upload_dir['basedir'] . '/font-upload/' . $font['font_file'];
+            if (!file_exists($file_path) || !is_readable($file_path)) {
+                return new WP_Error('file_not_found', '字体文件不存在', ['status' => 404]);
+            }
+
+            $filetype = wp_check_filetype($font['font_file']);
+            $mime = !empty($filetype['type']) ? $filetype['type'] : 'application/octet-stream';
+            $download_name = basename($font['font_file']);
+
+            while (ob_get_level()) {
+                ob_end_clean();
+            }
+
+            nocache_headers();
+            header('Content-Description: File Transfer');
+            header('Content-Type: ' . $mime);
+            header('Content-Disposition: attachment; filename="' . rawurlencode($download_name) . '"; filename*=UTF-8\'\'' . rawurlencode($download_name));
+            header('Content-Length: ' . filesize($file_path));
+            header('X-Content-Type-Options: nosniff');
+            readfile($file_path);
+            exit;
+        },
+        'permission_callback' => '__return_true',
+    ]);
+});
+
 add_action('admin_menu', function(){
     add_menu_page('字体管理', '字体管理', 'manage_options', 'font-manager', 'fm_admin_page', 'dashicons-art', 80);
+    add_submenu_page('font-manager', '邮箱配置', '邮箱配置', 'manage_options', 'font-mail-settings', 'fm_mail_settings_page');
 });
 
 function fm_admin_page(){
@@ -39,7 +593,7 @@ function fm_admin_page(){
     $cat_list = ["宋体","楷体","黑体","艺术体","像素体","编程字体","英文","其他"];
 ?>
 <div class="wrap">
-<h1>字体管理 <button class="fm-refresh" onclick="fmRegenHomepage()">重新生成首页</button></h1>
+<h1>字体管理 <button class="fm-refresh" onclick="fmRegenHomepage()">重新生成首页</button><button class="fm-refresh" onclick="fmRegenDetailPages()" style="background:#3858e9">重新生成全部详情页</button><a class="fm-refresh" href="<?php echo esc_url(admin_url('admin.php?page=font-mail-settings')); ?>" style="background:#7c3aed;text-decoration:none;display:inline-block;line-height:20px">邮箱配置</a></h1>
 <style>
 .fm-form{background:#fff;padding:20px;border-radius:8px;margin-top:20px;max-width:600px}
 .fm-form h2{font-size:18px;margin-bottom:15px}
@@ -130,6 +684,15 @@ function fmRegenHomepage(){
     .then(function(d){ alert(d.success ? "首页已更新 (" + d.total + " 款字体)" : "失败: " + d.message); location.reload(); })
     .catch(function(e){ alert("错误: " + e); });
 }
+function fmRegenDetailPages(){
+    if(!confirm("确定要重新生成全部详情页吗？")) return;
+    fetch(ajaxurl + "?action=fm_regen_detail_pages", {
+        headers: {"X-Requested-With": "XMLHttpRequest"}
+    })
+    .then(r => r.json())
+    .then(function(d){ alert(d.success ? "详情页已更新 (" + d.total + " 个)" : "失败: " + d.message); if(d.success) location.reload(); })
+    .catch(function(e){ alert("错误: " + e); });
+}
 document.querySelectorAll(".fm-delete").forEach(function(el){
     el.onclick = function(){
         if(!confirm("确定删除？")) return;
@@ -192,13 +755,18 @@ function fm_generate_font_card($f){
     $ext = strtoupper(pathinfo($file,PATHINFO_EXTENSION));
     $detail_url = "/font/".$slug."/";
     $font_url = "/wp-content/uploads/font-upload/".$file;
-    return '<div class="font-card" data-name="'.$name.'" data-cat="'.$cat.'" data-font-url="'.$font_url.'" data-font-class="'.$fclass.'"><a href="'.$detail_url.'" class="card-inner"><div class="font-preview"><div class="preview-main '.$fclass.'">'.$name.'</div><div class="preview-sub">点击查看效果演示</div></div><div class="font-info"><div class="font-title">'.$name.'</div><div class="font-tags"><span class="tag cat-tag">'.$cat.'</span><span class="tag">'.$ext.'</span><span class="tag">'.$size_str.'</span></div></div></a></div>';
+    return '<div class="font-card" data-name="'.$name.'" data-cat="'.$cat.'" data-font-url="'.$font_url.'" data-font-class="'.$fclass.'"><a href="'.$detail_url.'" class="card-inner"><div class="font-preview"><div class="preview-main '.$fclass.'"'.fm_font_inline_style($fclass).'>'.$name.'</div><div class="preview-sub">点击查看效果演示</div></div><div class="font-info"><div class="font-title">'.$name.'</div><div class="font-tags"><span class="tag cat-tag">'.$cat.'</span><span class="tag">'.$ext.'</span><span class="tag">'.$size_str.'</span></div></div></a></div>';
 }
 
 function fm_update_homepage($id, $font){
     $index_path = ABSPATH . "font-index.html";
     if(!file_exists($index_path)) return false;
     $html = file_get_contents($index_path);
+    if (strpos($html, '/wp-content/uploads/font-upload/fonts.css') === false) {
+        $html = str_replace('</title>', '</title>' . "\n<link rel=\"stylesheet\" href=\"/wp-content/uploads/font-upload/fonts.css?v=3\">", $html);
+    } else {
+        $html = preg_replace('#/wp-content/uploads/font-upload/fonts\.css\?v=\d+#', '/wp-content/uploads/font-upload/fonts.css?v=3', $html);
+    }
     $font_card = fm_generate_font_card($font);
     // Check if already exists
     if(strpos($html, $font_card) !== false) return true;
@@ -220,6 +788,11 @@ function fm_regenerate_homepage(){
     $index_path = ABSPATH . "font-index.html";
     if(!file_exists($index_path)) return ["success"=>false,"message"=>"font-index.html not found"];
     $html = file_get_contents($index_path);
+    if (strpos($html, '/wp-content/uploads/font-upload/fonts.css') === false) {
+        $html = str_replace('</title>', '</title>' . "\n<link rel=\"stylesheet\" href=\"/wp-content/uploads/font-upload/fonts.css?v=3\">", $html);
+    } else {
+        $html = preg_replace('#/wp-content/uploads/font-upload/fonts\.css\?v=\d+#', '/wp-content/uploads/font-upload/fonts.css?v=3', $html);
+    }
     $cat_counts = ["all"=>count($fonts)];
     foreach($fonts as $f){
         $cat = $f["category"];
@@ -275,18 +848,40 @@ function fm_regenerate_homepage(){
     return ["success"=>true,"total"=>count($fonts),"counts"=>$cat_counts];
 }
 
+
+function fm_regenerate_detail_pages(){
+    global $wpdb;
+    $table = $wpdb->prefix . "font_manager";
+    $fonts = $wpdb->get_results("SELECT * FROM $table ORDER BY id DESC", ARRAY_A);
+    $upload_dir = wp_upload_dir();
+    foreach($fonts as $font){
+        fm_generate_detail_page(
+            intval($font['id']),
+            $font['font_name'],
+            $font['font_slug'],
+            $font['font_file'],
+            $font['font_class'],
+            $font['category'],
+            $font['preview_text'],
+            intval($font['file_size']),
+            $upload_dir['baseurl'] . '/font-upload/' . $font['font_file']
+        );
+    }
+    return ["success"=>true,"total"=>count($fonts)];
+}
+
 function fm_generate_detail_page($id,$font_name,$font_slug,$font_file,$font_class,$category,$preview_text,$file_size,$font_url){
     $slug_dir = ABSPATH."font/".$font_slug;
     if(!is_dir($slug_dir)) mkdir($slug_dir, 0755, true);
     $file_size_mb = number_format($file_size/1024/1024, 1);
     $ext = strtoupper(pathinfo($font_file, PATHINFO_EXTENSION));
+    $default_preview = $preview_text ?: "字体预览";
     $css = '<style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{background:#0f0f0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Microsoft YaHei",sans-serif;min-height:100vh}
     .header{background:#1a1a1a;padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:60px}
     .logo{font-size:20px;font-weight:700;color:#fff;text-decoration:none;display:flex;align-items:center;gap:10px}
     .logo-icon{font-size:24px}
-    .search-box{flex:1;max-width:400px;margin:0 40px}
     input[type="text"]{width:100%;padding:10px 16px;background:#2a2a2a;border:1px solid #3a3a3a;color:#fff;border-radius:20px;font-size:14px;outline:none}
     input[type="text"]:focus{border-color:#4a4a4a;background:#333}
     .auth-bar{display:flex;align-items:center;gap:12px}
@@ -300,10 +895,14 @@ function fm_generate_detail_page($id,$font_name,$font_slug,$font_file,$font_clas
     .font-meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
     .tag{background:#2a2a2a;padding:6px 14px;border-radius:50px;font-size:13px;color:#aaa}
     .preview-section{margin:40px 0}
-    .preview-box{background:#0f0f0f;border-radius:12px;padding:60px 40px;text-align:center;margin-bottom:20px}
-    .preview-main{font-size:120px;line-height:1.2;word-break:break-word;margin-bottom:20px}
+    .preview-box{background:#0f0f0f;border-radius:12px;padding:60px 40px;text-align:center;margin-bottom:16px}
+    .preview-main{font-size:120px;line-height:1.2;word-break:break-word;margin-bottom:20px;min-height:150px}
     .preview-chars{font-size:48px;letter-spacing:8px;margin-top:20px;color:#ccc}
     .preview-label{color:#666;font-size:13px;margin-bottom:16px}
+    .preview-input-wrap{position:relative;max-width:600px;margin:0 auto}
+    .preview-hint{color:#666;font-size:12px;text-align:center;margin-bottom:8px}.preview-input{width:100%;padding:14px 20px;background:#252525;border:1px solid #4a4a4a;border-radius:12px;color:#fff;font-size:16px;text-align:center;outline:none;transition:border-color .2s}
+    .preview-input:focus{border-color:#555}
+    .preview-input::placeholder{color:#555}
     .font-info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:30px 0}
     .info-card{background:#252525;padding:20px;border-radius:12px}
     .info-label{color:#666;font-size:12px;margin-bottom:6px}
@@ -320,8 +919,9 @@ function fm_generate_detail_page($id,$font_name,$font_slug,$font_file,$font_clas
     .login-modal-btn{display:inline-flex;align-items:center;gap:8px;background:#fff;color:#000;padding:12px 32px;border-radius:50px;font-size:15px;font-weight:600;text-decoration:none;margin-bottom:16px}
     .close-modal{position:absolute;top:20px;right:20px;background:none;border:none;color:#666;font-size:24px;cursor:pointer}
     </style>';
-    $download_url = "/wp-content/uploads/font-upload/".$font_file;
-    $html = '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>'.$font_name.' - 免费字体下载</title>'.$css.'<link rel="stylesheet" href="/wp-content/uploads/font-upload/fonts.css"></head><body><header class="header"><a href="/font-index.html" class="logo"><span class="logo-icon">←</span> 免费字体</a><div class="auth-bar" id="authBar"><a href="/login.html" class="auth-link">登录</a><span style="color:#555">|</span><a href="/register" class="auth-link">注册</a></div></header><div class="container"><div class="font-detail"><div class="font-header"><div class="font-title">'.$font_name.'</div><div class="font-meta"><span class="tag">'.$category.'</span><span class="tag">'.$ext.'</span><span class="tag">'.$file_size_mb.' MB</span></div></div><div class="preview-section"><div class="preview-label">字体预览</div><div class="preview-box"><div class="preview-main '.$font_class.'">'.$preview_text.'</div></div></div><div class="font-info-grid"><div class="info-card"><div class="info-label">字体名称</div><div class="info-value">'.$font_name.'</div></div><div class="info-card"><div class="info-label">字体格式</div><div class="info-value">'.$ext.'</div></div><div class="info-card"><div class="info-label">文件大小</div><div class="info-value">'.$file_size_mb.' MB</div></div><div class="info-card"><div class="info-label">字体分类</div><div class="info-value">'.$category.'</div></div></div><div class="download-section"><button class="download-btn" id="downloadBtn" data-url="'.$download_url.'">↓ 下载字体文件</button></div></div></div><div id="loginModal" class="login-modal"><div class="login-modal-content"><button class="close-modal" onclick="closeLoginModal()">×</button><h3>请先登录</h3><p>登录后才能下载字体文件</p><a href="/login.html" class="login-modal-btn">立即登录</a></div></div><script src="/checkauth.js"></script></body></html>';
+    $download_url = fm_get_protected_download_url($font_slug);
+    $preview_html = '<div class="preview-section"><div class="preview-label">字体预览</div><div class="preview-box"><div class="preview-main '.$font_class.'" id="previewText"'.fm_font_inline_style($font_class).'>'.$default_preview.'</div></div><div class="preview-input-wrap"><div class="preview-hint">可自由输入文字预览效果</div><input type="text" class="preview-input" id="previewInput" placeholder="输入任意文字预览效果…" value="'.$default_preview.'"></div></div>';
+    $html = '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>'.$font_name.' - 免费字体下载</title>'.$css.'<link rel="stylesheet" href="/wp-content/uploads/font-upload/fonts.css?v=3"></head><body><header class="header"><a href="/font-index.html" class="logo"><span class="logo-icon">←</span> 免费字体</a><div class="auth-bar" id="authBar"><a href="/login.html" class="auth-link">登录</a><span style="color:#555">|</span><a href="/register.html" class="auth-link">注册</a></div></header><div class="container"><div class="font-detail"><div class="font-header"><div class="font-title">'.$font_name.'</div><div class="font-meta"><span class="tag">'.$category.'</span><span class="tag">'.$ext.'</span><span class="tag">'.$file_size_mb.' MB</span></div></div>'.$preview_html.'<div class="font-info-grid"><div class="info-card"><div class="info-label">字体名称</div><div class="info-value">'.$font_name.'</div></div><div class="info-card"><div class="info-label">字体格式</div><div class="info-value">'.$ext.'</div></div><div class="info-card"><div class="info-label">文件大小</div><div class="info-value">'.$file_size_mb.' MB</div></div><div class="info-card"><div class="info-label">字体分类</div><div class="info-value">'.$category.'</div></div></div><div class="download-section"><button class="download-btn" id="downloadBtn" data-url="'.$download_url.'">↓ 下载字体文件</button></div></div></div><div id="loginModal" class="login-modal"><div class="login-modal-content"><button class="close-modal" onclick="closeLoginModal()">×</button><h3>请先登录</h3><p>登录后才能下载字体文件</p><a href="/login.html" class="login-modal-btn">立即登录</a></div></div><script src="/checkauth.js"></script><script>document.getElementById("previewInput").addEventListener("input",function(){var t=this.value||this.getAttribute("placeholder");document.getElementById("previewText").textContent=t});</script></body></html>';
     file_put_contents($slug_dir."/index.html", $html);
     return true;
 }
@@ -330,6 +930,15 @@ add_action("wp_ajax_fm_regen_homepage", function(){
     header("Content-Type: application/json");
     if(!current_user_can("manage_options")){echo json_encode(["success"=>false,"message"=>"需要管理员权限"]);wp_die();}
     $result = fm_regenerate_homepage();
+    echo json_encode($result);
+    wp_die();
+});
+
+
+add_action("wp_ajax_fm_regen_detail_pages", function(){
+    header("Content-Type: application/json");
+    if(!current_user_can("manage_options")){echo json_encode(["success"=>false,"message"=>"需要管理员权限"]);wp_die();}
+    $result = fm_regenerate_detail_pages();
     echo json_encode($result);
     wp_die();
 });
