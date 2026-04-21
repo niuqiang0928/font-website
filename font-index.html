@@ -8,7 +8,7 @@
 <style>
 
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:radial-gradient(circle at top,rgba(255,255,255,.06),transparent 26%),linear-gradient(180deg,#0d0d10 0%,#0a0a0d 100%);font-family:-apple-system,BlinkMacSystemFont,"Microsoft YaHei",sans-serif;color:#fff;min-height:100vh;padding-top:112px}
+body{background:radial-gradient(circle at top,rgba(255,255,255,.06),transparent 26%),linear-gradient(180deg,#0d0d10 0%,#0a0a0d 100%);font-family:-apple-system,BlinkMacSystemFont,"Microsoft YaHei",sans-serif;color:#fff;min-height:100vh;padding-top:var(--header-offset,112px)}
 .header{position:fixed;top:14px;left:0;right:0;z-index:120;padding:0 18px;pointer-events:none}
 .header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:18px;padding:14px 18px;border:1px solid rgba(255,255,255,.09);border-radius:24px;background:rgba(14,14,18,.74);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 18px 46px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.05);pointer-events:auto}
 .header-left{display:flex;align-items:center;gap:18px;min-width:0;flex:1}
@@ -18,6 +18,7 @@ body{background:radial-gradient(circle at top,rgba(255,255,255,.06),transparent 
 .header-nav a{position:relative;padding:10px 16px;border-radius:999px;color:rgba(255,255,255,.72);text-decoration:none;font-size:14px;letter-spacing:.2px;background:rgba(255,255,255,.02);border:1px solid transparent;transition:all .24s ease}
 .header-nav a:hover{color:#fff;background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.08);transform:translateY(-1px)}
 .header-nav a.active{color:#0b0b0d;font-weight:700;background:linear-gradient(180deg,#ffffff 0%,#ececec 100%);box-shadow:0 8px 18px rgba(255,255,255,.12)}
+.mobile-nav-toggle{display:none;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.04);color:#fff;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:600;line-height:1;cursor:pointer}
 .header-search-form{flex:0 1 420px;display:flex;gap:10px;align-items:center;min-width:260px}
 .header-search-input{flex:1;width:100%;padding:12px 16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#fff;border-radius:999px;font-size:14px;outline:none}
 .header-search-input:focus{border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.06)}
@@ -32,11 +33,11 @@ body{background:radial-gradient(circle at top,rgba(255,255,255,.06),transparent 
 .user-name{padding:10px 16px;border-radius:999px;color:#fff;font-size:14px;background:rgba(255,255,255,.04)}
 .auth-sep{display:none}
 @media(max-width:1100px){
- body{padding-top:128px}
+ body{padding-top:var(--header-offset,128px)}
  .header-search-form{flex-basis:320px}
 }
 @media(max-width:900px){
- body{padding-top:170px}
+ body{padding-top:var(--header-offset,170px)}
  .header{top:10px;padding:0 12px}
  .header-inner{gap:12px;padding:12px 14px;flex-wrap:wrap}
  .header-left{gap:14px;flex-wrap:wrap;order:1;width:100%}
@@ -45,15 +46,16 @@ body{background:radial-gradient(circle at top,rgba(255,255,255,.06),transparent 
  .header-nav{gap:8px}
 }
 @media(max-width:600px){
- body{padding-top:186px}
- .header-inner{border-radius:20px}
- .header-search-form{flex-direction:column;align-items:stretch}
- .header-search-btn{width:100%}
- .header-left{gap:12px}
- .header-nav a{padding:8px 12px;font-size:13px}
- .logo img{height:30px}
- .auth-bar{gap:6px;padding:4px}
- .auth-link,.user-name{padding:9px 12px;font-size:13px}
+ body{padding-top:var(--header-offset,112px)}
+ .header{top:8px;padding:0 10px}
+ .header-inner{border-radius:18px;gap:8px;padding:9px 10px}
+ .header-left{gap:10px;flex-wrap:nowrap;justify-content:space-between;position:relative}
+ .mobile-nav-toggle{display:inline-flex;align-items:center;justify-content:center}
+ .header-nav{display:none;position:absolute;top:calc(100% + 8px);left:0;right:0;flex-direction:column;gap:6px;padding:8px;border-radius:14px;background:rgba(14,14,18,.94);border:1px solid rgba(255,255,255,.09);box-shadow:0 16px 36px rgba(0,0,0,.35)}
+ .header-nav.open{display:flex}
+ .header-nav a{padding:9px 12px;font-size:13px;width:100%}
+ .header-search-form,.auth-bar{display:none}
+ .logo img{height:28px}
 }
 
 .carousel-wrap{padding:20px 20px 0;max-width:1400px;margin:0 auto;display:grid;grid-template-columns:3fr 1fr;gap:16px;height:360px}
@@ -73,7 +75,7 @@ body{background:radial-gradient(circle at top,rgba(255,255,255,.06),transparent 
 .carousel-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.45)}
 .carousel-dot.active{background:#fff}
 .section-wrap{padding:24px 20px 0;max-width:1400px;margin:0 auto}
-.section-card{background:#1a1a1a;border-radius:16px;padding:40px 30px 80px;margin-bottom:20px;position:relative;border:1px solid #2a2a2a;display:flex;flex-direction:column}
+.section-card{background:transparent;border:none;border-radius:0;padding:8px 0 56px;margin-bottom:6px;position:relative;display:flex;flex-direction:column}
 .section-title{color:#fff;font-size:28px;font-weight:700;text-align:center;margin-bottom:12px}
 .section-hint{color:rgba(255,255,255,.4);font-size:13px;text-align:center;margin-bottom:24px}
 .section-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
@@ -95,6 +97,9 @@ body{background:radial-gradient(circle at top,rgba(255,255,255,.06),transparent 
  .carousel-side{grid-template-rows:auto;grid-template-columns:1fr 1fr}
  .section-grid{grid-template-columns:repeat(2,1fr)}
  .section-grid.font-grid{grid-template-columns:repeat(2,1fr)}
+ #promptGrid{display:block;column-count:2;-webkit-column-count:2;column-gap:10px}
+ #promptGrid .item{display:block;width:100%;margin:0 0 10px;break-inside:avoid;page-break-inside:avoid;-webkit-column-break-inside:avoid;padding:10px}
+ #promptGrid .item img{display:block;width:100%;aspect-ratio:auto;height:auto;object-fit:cover;margin-bottom:8px}
 }
 @media(max-width:600px){
  .section-grid{grid-template-columns:1fr}
@@ -118,7 +123,8 @@ body.filing-mode>.fm-filing-overlay{display:flex !important}
   <div class="header-inner">
     <div class="header-left">
       <a href="/font-index.html" class="logo"><img src="/wp-content/uploads/logo-zitipai.png" alt="logo"></a>
-      <nav class="header-nav">
+      <button type="button" class="mobile-nav-toggle" id="mobileNavToggle" aria-expanded="false" aria-controls="mobileNav">导航</button>
+      <nav class="header-nav" id="mobileNav">
         <a href="/font-index.html" class="active">首页</a>
         <a href="/font-prompts.html">字体提示词</a>
         <a href="/fonts.html">免费字体</a>
@@ -177,6 +183,42 @@ body.filing-mode>.fm-filing-overlay{display:flex !important}
     var q = (input.value || '').trim();
     location.href = '/site-search.html' + (q ? '?q=' + encodeURIComponent(q) : '');
   });
+})();
+</script>
+<script>
+(function(){
+  var btn = document.getElementById('mobileNavToggle');
+  var nav = document.getElementById('mobileNav');
+  if(!btn || !nav) return;
+  function closeNav(){
+    nav.classList.remove('open');
+    btn.setAttribute('aria-expanded','false');
+  }
+  btn.addEventListener('click', function(e){
+    e.stopPropagation();
+    var open = nav.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  nav.querySelectorAll('a').forEach(function(link){ link.addEventListener('click', closeNav); });
+  document.addEventListener('click', function(e){
+    if(!nav.contains(e.target) && e.target !== btn && !btn.contains(e.target)) closeNav();
+  });
+  window.addEventListener('resize', function(){ if(window.innerWidth > 600) closeNav(); });
+})();
+</script>
+<script>
+(function(){
+  var header = document.querySelector('.header');
+  if(!header) return;
+  function updateHeaderOffset(){
+    var top = parseFloat(window.getComputedStyle(header).top) || 0;
+    var offset = Math.ceil(header.offsetHeight + Math.max(top, 0) + 12);
+    document.documentElement.style.setProperty('--header-offset', offset + 'px');
+  }
+  updateHeaderOffset();
+  window.addEventListener('resize', updateHeaderOffset, { passive: true });
+  window.addEventListener('orientationchange', updateHeaderOffset);
+  if(window.ResizeObserver){ new ResizeObserver(updateHeaderOffset).observe(header); }
 })();
 </script>
 
