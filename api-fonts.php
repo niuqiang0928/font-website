@@ -3,7 +3,21 @@ error_reporting(0);
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json; charset=utf-8');
 
+$__fm_wp_load = __DIR__ . '/wp-load.php';
+if (file_exists($__fm_wp_load)) {
+    require_once $__fm_wp_load;
+    $assets = get_option('fm_home_assets', []);
+    if (is_array($assets) && !empty($assets['filing_mode'])) {
+        echo json_encode([], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+}
+
 $db = mysqli_connect('localhost', 'wp_user', 'WpPass2024', 'wordpress');
+if (!$db) {
+    echo json_encode([], JSON_UNESCAPED_UNICODE);
+    exit;
+}
 mysqli_set_charset($db, 'utf8mb4');
 
 $p = isset($_GET['p']) ? max(1, intval($_GET['p'])) : 1;

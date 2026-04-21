@@ -2,11 +2,11 @@
 /*
 Plugin Name: Font Manager
 Description: 字体管理插件 - 上传、分类、生成详情页、自动更新首页
-Version: 1.5
+Version: 1.6
 Author: Manon
 */
 
-define('FM_SCHEMA_VERSION', '1.5.0');
+define('FM_SCHEMA_VERSION', '1.6.0');
 
 function fm_install_tables(){
     global $wpdb;
@@ -112,6 +112,7 @@ function fm_prepare_prompt_table(){
 
 function fm_get_home_assets_defaults(){
     return [
+        'filing_mode' => 0,
         'carousel' => [],
         'squares' => [
             ['image_url'=>'', 'title'=>'', 'sub'=>'', 'link'=>''],
@@ -136,7 +137,22 @@ function fm_get_home_assets(){
     if(empty($assets['carousel']) || !is_array($assets['carousel'])) {
         $assets['carousel'] = [];
     }
+    $assets['filing_mode'] = !empty($assets['filing_mode']) ? 1 : 0;
     return $assets;
+}
+
+
+function fm_is_filing_mode_enabled(){
+    $assets = fm_get_home_assets();
+    return !empty($assets['filing_mode']);
+}
+
+function fm_filing_mode_overlay_style(){
+    return '.fm-filing-overlay{display:none;position:fixed;inset:0;z-index:99999;background:#0b0b0d;align-items:center;justify-content:center;padding:24px}.fm-filing-card{width:min(560px,100%);background:#141418;border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:36px 28px;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.42)}.fm-filing-title{font-size:32px;font-weight:700;margin-bottom:10px}.fm-filing-sub{color:rgba(255,255,255,.55);font-size:15px;line-height:1.8}body.filing-mode{padding-top:0 !important;overflow:hidden}body.filing-mode > *{display:none !important}body.filing-mode > .fm-filing-overlay{display:flex !important}';
+}
+
+function fm_filing_mode_boot_script(){
+    return '<script>(function(){function enable(){if(!document.body||document.body.classList.contains("filing-mode"))return;var overlay=document.createElement("div");overlay.className="fm-filing-overlay";overlay.innerHTML="<div class=\"fm-filing-card\"><div class=\"fm-filing-title\">网站备案中</div><div class=\"fm-filing-sub\">站点内容暂时关闭，备案完成后恢复访问。</div></div>";document.body.appendChild(overlay);document.body.classList.add("filing-mode");}window.__fmEnableFilingMode=enable;fetch("/wp-json/font-manager/v1/home-assets",{cache:"no-store"}).then(function(r){return r.ok?r.json():null;}).then(function(data){if(data&&data.filing_mode){enable();}}).catch(function(){});})();</script>';
 }
 
 
@@ -348,7 +364,7 @@ function fm_build_detail_page_html($font){
     .login-modal p{color:#999;margin-bottom:24px}
     .login-modal-btn{display:inline-flex;align-items:center;gap:8px;background:#fff;color:#000;padding:12px 32px;border-radius:50px;font-size:15px;font-weight:600;text-decoration:none;margin-bottom:16px}
     .close-modal{position:absolute;top:20px;right:20px;background:none;border:none;color:#666;font-size:24px;cursor:pointer}
-    </style><link rel="stylesheet" href="'.$fonts_css.'"></head><body><header class="header"><a href="/font-index.html" class="logo"><span class="logo-icon">←</span> 免费字体</a><div class="auth-bar" id="authBar"><a href="/login.html" class="auth-link">登录</a><span style="color:#555">|</span><a href="/register.html" class="auth-link">注册</a></div></header><div class="container"><div class="font-detail"><div class="font-header"><div class="font-title">'.$font_name_html.'</div><div class="font-meta"><span class="tag">'.$category_html.'</span><span class="tag">'.$ext_html.'</span><span class="tag">'.$size_html.'</span></div></div><div class="preview-section"><div class="preview-label">字体预览</div><div class="preview-box"><div class="preview-main '.$family_attr.'" id="previewText" data-font-family="'.$family_attr.'" style="font-family:\''.$style_family.'\',-apple-system,BlinkMacSystemFont,\'Microsoft YaHei\',sans-serif">'.$preview_html.'</div></div><div class="preview-input-wrap"><div class="preview-hint">可自由输入文字预览效果</div><input type="text" class="preview-input" id="previewInput" placeholder="输入任意文字预览效果…" value="'.$preview_html.'"></div></div><div class="font-info-grid"><div class="info-card"><div class="info-label">字体名称</div><div class="info-value">'.$font_name_html.'</div></div><div class="info-card"><div class="info-label">字体格式</div><div class="info-value">'.$ext_html.'</div></div><div class="info-card"><div class="info-label">文件大小</div><div class="info-value">'.$size_html.'</div></div><div class="info-card"><div class="info-label">字体分类</div><div class="info-value">'.$category_html.'</div></div></div><div class="download-section"><button class="download-btn" id="downloadBtn" data-url="'.$download_attr.'">↓ 下载字体文件</button></div></div></div><div id="loginModal" class="login-modal"><div class="login-modal-content"><button class="close-modal" onclick="closeLoginModal()">×</button><h3>请先登录</h3><p>登录后才能下载字体文件</p><a href="/login.html" class="login-modal-btn">立即登录</a></div></div><script src="/checkauth.js"></script><script>document.getElementById("previewInput").addEventListener("input",function(){var t=this.value||this.getAttribute("placeholder");document.getElementById("previewText").textContent=t});</script></body></html>';
+    </style><style>'.fm_filing_mode_overlay_style().'</style><link rel="stylesheet" href="'.$fonts_css.'"></head><body><header class="header"><a href="/font-index.html" class="logo"><span class="logo-icon">←</span> 免费字体</a><div class="auth-bar" id="authBar"><a href="/login.html" class="auth-link">登录</a><span style="color:#555">|</span><a href="/register.html" class="auth-link">注册</a></div></header><div class="container"><div class="font-detail"><div class="font-header"><div class="font-title">'.$font_name_html.'</div><div class="font-meta"><span class="tag">'.$category_html.'</span><span class="tag">'.$ext_html.'</span><span class="tag">'.$size_html.'</span></div></div><div class="preview-section"><div class="preview-label">字体预览</div><div class="preview-box"><div class="preview-main '.$family_attr.'" id="previewText" data-font-family="'.$family_attr.'" style="font-family:\''.$style_family.'\',-apple-system,BlinkMacSystemFont,\'Microsoft YaHei\',sans-serif">'.$preview_html.'</div></div><div class="preview-input-wrap"><div class="preview-hint">可自由输入文字预览效果</div><input type="text" class="preview-input" id="previewInput" placeholder="输入任意文字预览效果…" value="'.$preview_html.'"></div></div><div class="font-info-grid"><div class="info-card"><div class="info-label">字体名称</div><div class="info-value">'.$font_name_html.'</div></div><div class="info-card"><div class="info-label">字体格式</div><div class="info-value">'.$ext_html.'</div></div><div class="info-card"><div class="info-label">文件大小</div><div class="info-value">'.$size_html.'</div></div><div class="info-card"><div class="info-label">字体分类</div><div class="info-value">'.$category_html.'</div></div></div><div class="download-section"><button class="download-btn" id="downloadBtn" data-url="'.$download_attr.'">↓ 下载字体文件</button></div></div></div><div id="loginModal" class="login-modal"><div class="login-modal-content"><button class="close-modal" onclick="closeLoginModal()">×</button><h3>请先登录</h3><p>登录后才能下载字体文件</p><a href="/login.html" class="login-modal-btn">立即登录</a></div></div><script src="/checkauth.js"></script>'.fm_filing_mode_boot_script().'<script>document.getElementById("previewInput").addEventListener("input",function(){var t=this.value||this.getAttribute("placeholder");document.getElementById("previewText").textContent=t});</script></body></html>';
 }
 
 function fm_generate_detail_page($id,$font_name,$font_slug,$font_file,$font_class,$category,$preview_text,$file_size,$font_url){
@@ -485,8 +501,18 @@ function fm_admin_page(){
 
 <?php $home_assets = fm_get_home_assets(); ?>
 <div class="fm-form" style="max-width:1100px">
-<h2>首页展示管理</h2>
-<p style="margin:0 0 16px;color:#666">这里管理首页顶部的大轮播图，以及右侧两张方形图片。保存后，前台 <code>/font-index.html</code> 会自动读取并展示。</p>
+<h2>首页展示管理 / 全站备案模式</h2>
+<p style="margin:0 0 16px;color:#666">这里管理首页顶部的大轮播图，以及右侧两张方形图片。保存后，前台 <code>/font-index.html</code> 会自动读取并展示；同时也可以开启全站备案模式。</p>
+
+<div style="margin:0 0 18px;padding:14px 16px;border:1px solid #dcdcde;border-radius:10px;background:#fafafa">
+    <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer">
+        <input type="checkbox" id="fmFilingMode" style="margin-top:2px" <?php checked(!empty($home_assets['filing_mode'])); ?>>
+        <span>
+            <strong>开启备案模式</strong><br>
+            <span style="color:#666">勾选并保存后，全站会进入备案模式：首页、字体列表、提示词页、搜索页，以及重建后的字体详情页都会隐藏内容；取消勾选并保存后恢复正常展示。</span>
+        </span>
+    </label>
+</div>
 
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
     <div>
@@ -525,6 +551,7 @@ function fm_admin_page(){
     var carouselList = document.getElementById('fmCarouselList');
     var squareList = document.getElementById('fmSquareList');
     var homeMsg = document.getElementById('fmHomeMsg');
+    var filingMode = document.getElementById('fmFilingMode');
 
     function esc(v){ return (v || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
@@ -633,6 +660,7 @@ function fm_admin_page(){
 
     document.getElementById('fmSaveHomeAssets').addEventListener('click', function(){
         var payload = {
+            filing_mode: filingMode && filingMode.checked ? 1 : 0,
             carousel: collectCards(carouselList),
             squares: collectCards(squareList).slice(0,2)
         };
@@ -1331,6 +1359,7 @@ add_action('wp_ajax_fm_save_home_assets', function(){
     }
 
     $clean = [
+        'filing_mode' => !empty($data['filing_mode']) ? 1 : 0,
         'carousel' => [],
         'squares' => [],
     ];

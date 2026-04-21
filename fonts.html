@@ -4,145 +4,316 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>免费字体 - 免费字体下载</title>
-<link rel="stylesheet" href="/wp-content/uploads/font-upload/fonts.css">
+<link rel="stylesheet" href="/wp-content/uploads/font-upload/fonts.css?v=6">
 <style>
+
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#0f0f0f;font-family:-apple-system,BlinkMacSystemFont,"Microsoft YaHei",sans-serif;color:#fff}
-.header{background:#1a1a1a;padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:60px}
-.logo{font-size:20px;font-weight:700;color:#fff;text-decoration:none;display:flex;align-items:center;gap:10px}
-.logo-icon{font-size:24px}
-.header-nav{display:flex;gap:8px}
-.header-nav a{padding:6px 16px;border-radius:20px;color:#999;text-decoration:none;font-size:14px;transition:all .2s}
-.header-nav a:hover{color:#fff}
-.header-nav a.active{background:#fff;color:#000;font-weight:600}
-.auth-bar{display:flex;align-items:center;gap:12px}
-.auth-link{color:#999;text-decoration:none;font-size:14px;transition:color .2s}
-.auth-link:hover{color:#fff}
-.user-name{color:#fff;font-size:14px}
-.container{max-width:1200px;margin:0 auto;padding:30px 20px}
-.search-bar{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;align-items:center}
+body{background:radial-gradient(circle at top,rgba(255,255,255,.06),transparent 26%),linear-gradient(180deg,#0d0d10 0%,#0a0a0d 100%);font-family:-apple-system,BlinkMacSystemFont,"Microsoft YaHei",sans-serif;color:#fff;min-height:100vh;padding-top:112px}
+.header{position:fixed;top:14px;left:0;right:0;z-index:120;padding:0 18px;pointer-events:none}
+.header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:18px;padding:14px 18px;border:1px solid rgba(255,255,255,.09);border-radius:24px;background:rgba(14,14,18,.74);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 18px 46px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.05);pointer-events:auto}
+.header-left{display:flex;align-items:center;gap:18px;min-width:0;flex:1}
+.logo{display:inline-flex;align-items:center;text-decoration:none;flex:0 0 auto}
+.logo img{height:34px;display:block}
+.header-nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap;min-width:0}
+.header-nav a{position:relative;padding:10px 16px;border-radius:999px;color:rgba(255,255,255,.72);text-decoration:none;font-size:14px;letter-spacing:.2px;background:rgba(255,255,255,.02);border:1px solid transparent;transition:all .24s ease}
+.header-nav a:hover{color:#fff;background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.08);transform:translateY(-1px)}
+.header-nav a.active{color:#0b0b0d;font-weight:700;background:linear-gradient(180deg,#ffffff 0%,#ececec 100%);box-shadow:0 8px 18px rgba(255,255,255,.12)}
+.header-search-form{flex:0 1 420px;display:flex;gap:10px;align-items:center;min-width:260px}
+.header-search-input{flex:1;width:100%;padding:12px 16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#fff;border-radius:999px;font-size:14px;outline:none}
+.header-search-input:focus{border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.06)}
+.header-search-input::placeholder{color:rgba(255,255,255,.34)}
+.header-search-btn{padding:12px 18px;border:none;border-radius:999px;background:#fff;color:#0b0b0d;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap}
+.header-search-btn:hover{background:#ececec}
+.auth-bar{display:flex;align-items:center;gap:10px;flex:0 0 auto;padding:6px;border-radius:999px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+.auth-link{padding:10px 16px;border-radius:999px;color:rgba(255,255,255,.72);text-decoration:none;font-size:14px;transition:all .24s ease}
+.auth-link:hover{color:#fff;background:rgba(255,255,255,.05)}
+.auth-link:last-of-type{background:#fff;color:#0b0b0d;font-weight:700}
+.auth-link:last-of-type:hover{background:#ececec}
+.user-name{padding:10px 16px;border-radius:999px;color:#fff;font-size:14px;background:rgba(255,255,255,.04)}
+.auth-sep{display:none}
+@media(max-width:1100px){
+ body{padding-top:128px}
+ .header-search-form{flex-basis:320px}
+}
+@media(max-width:900px){
+ body{padding-top:170px}
+ .header{top:10px;padding:0 12px}
+ .header-inner{gap:12px;padding:12px 14px;flex-wrap:wrap}
+ .header-left{gap:14px;flex-wrap:wrap;order:1;width:100%}
+ .header-search-form{order:2;flex:1 1 100%;min-width:0}
+ .auth-bar{order:3;margin-left:auto}
+ .header-nav{gap:8px}
+}
+@media(max-width:600px){
+ body{padding-top:186px}
+ .header-inner{border-radius:20px}
+ .header-search-form{flex-direction:column;align-items:stretch}
+ .header-search-btn{width:100%}
+ .header-left{gap:12px}
+ .header-nav a{padding:8px 12px;font-size:13px}
+ .logo img{height:30px}
+ .auth-bar{gap:6px;padding:4px}
+ .auth-link,.user-name{padding:9px 12px;font-size:13px}
+}
+
+.container{max-width:1200px;margin:0 auto;padding:36px 20px 30px}
+.page-filter-title{font-size:12px;letter-spacing:.16em;color:rgba(255,255,255,.42);text-transform:uppercase;margin-bottom:12px}
+.search-bar{display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap;align-items:center}
 .search-bar input{flex:1;min-width:200px;padding:10px 20px;background:#1a1a1a;border:1px solid #333;color:#fff;border-radius:25px;font-size:14px;outline:none}
 .search-bar input:focus{border-color:#555}
 .search-bar input::placeholder{color:#555}
-.cat-bar{display:flex;gap:8px;margin-bottom:30px;flex-wrap:wrap}
+.search-btn{padding:10px 18px;border-radius:24px;border:1px solid #444;background:#fff;color:#000;font-size:14px;font-weight:600;cursor:pointer}
+.cat-bar{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
 .cat-bar button{padding:7px 18px;border-radius:20px;border:1px solid #333;background:#1a1a1a;color:#888;cursor:pointer;font-size:13px;transition:all .2s}
 .cat-bar button:hover{border-color:#555;color:#fff}
 .cat-bar button.active{background:#fff;color:#000;border-color:#fff;font-weight:600}
+.meta-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;color:#666;font-size:13px}
 .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-.grid .font-item{background:#1a1a1a;border-radius:12px;padding:20px;cursor:pointer;transition:background .2s;display:flex;flex-direction:column;align-items:center;text-align:center;border:1px solid #2a2a2a}
-.grid .font-item:hover{background:#222;border-color:#3a3a3a}
-.grid .font-item .font-preview{font-size:36px;color:#fff;margin-bottom:12px;height:60px;display:flex;align-items:center;justify-content:center}
-.grid .font-item .font-name{color:rgba(255,255,255,.7);font-size:13px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;width:100%}
-.grid .font-item .font-cat{color:rgba(255,255,255,.3);font-size:11px;margin-top:6px}
-.placeholder-block{background:#1a1a1a;border-radius:12px;padding:20px;color:rgba(255,255,255,.2);font-size:13px;text-align:center;border:1px solid #2a2a2a;min-height:120px;display:flex;align-items:center;justify-content:center}
-.no-more{text-align:center;padding:20px;color:#444;font-size:13px;margin-top:16px}
+.font-item{background:#1a1a1a;border-radius:12px;padding:20px;cursor:pointer;transition:background .2s;display:flex;flex-direction:column;align-items:center;text-align:center;border:1px solid #2a2a2a;min-height:138px;content-visibility:auto;contain-intrinsic-size:138px}
+.font-item:hover{background:#222;border-color:#3a3a3a}
+.font-preview{font-size:36px;color:#fff;margin-bottom:12px;height:60px;display:flex;align-items:center;justify-content:center;width:100%;overflow:hidden;word-break:break-word;transition:opacity .2s}
+.font-preview.pending{opacity:.85}
+.font-name{color:rgba(255,255,255,.75);font-size:13px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;width:100%}
+.font-cat{color:rgba(255,255,255,.35);font-size:11px;margin-top:6px}
+.placeholder-block,.status-card{background:#1a1a1a;border-radius:12px;padding:20px;color:rgba(255,255,255,.25);font-size:13px;text-align:center;border:1px solid #2a2a2a;min-height:120px;display:flex;align-items:center;justify-content:center}
+.status-card{grid-column:1/-1;color:#666}
+.load-wrap{text-align:center;padding:24px 0 4px}
+.load-btn{display:none;padding:10px 22px;border-radius:24px;border:1px solid #444;background:#1a1a1a;color:#fff;font-size:14px;cursor:pointer}
+.load-btn.show{display:inline-block}
+.no-more{text-align:center;padding:20px;color:#444;font-size:13px;display:none}
 @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){.grid{grid-template-columns:repeat(2,1fr);padding:0 12px}.container{padding:20px 12px}}
+@media(max-width:600px){.grid{grid-template-columns:repeat(2,1fr)}.container{padding:20px 12px}.search-btn{width:100%}}
+</style>
+<style>
+.fm-filing-overlay{display:none;position:fixed;inset:0;z-index:99999;background:#0b0b0d;align-items:center;justify-content:center;padding:24px}
+.fm-filing-card{width:min(560px,100%);background:#141418;border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:36px 28px;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.42)}
+.fm-filing-title{font-size:32px;font-weight:700;margin-bottom:10px}
+.fm-filing-sub{color:rgba(255,255,255,.55);font-size:15px;line-height:1.8}
+body.filing-mode{padding-top:0 !important;overflow:hidden}
+body.filing-mode>*{display:none !important}
+body.filing-mode>.fm-filing-overlay{display:flex !important}
 </style>
 </head>
 <body>
+
 <header class="header">
-<a href="/font-index.html" class="logo"><img src="/wp-content/uploads/logo-zitipai.png" height="36" alt="logo"></a>
-<nav class="header-nav">
-<a href="/font-index.html">首页</a>
-<a href="/font-prompts.html">字体提示词</a>
-<a href="/fonts.html" class="active">免费字体</a>
-</nav>
-<div class="auth-bar" id="authBar">
-<a href="/login.html" class="auth-link">登录</a>
-<span style="color:#444">|</span>
-<a href="/register.html" class="auth-link">注册</a>
-</div>
+  <div class="header-inner">
+    <div class="header-left">
+      <a href="/font-index.html" class="logo"><img src="/wp-content/uploads/logo-zitipai.png" alt="logo"></a>
+      <nav class="header-nav">
+        <a href="/font-index.html">首页</a>
+        <a href="/font-prompts.html">字体提示词</a>
+        <a href="/fonts.html" class="active">免费字体</a>
+      </nav>
+    </div>
+    <form class="header-search-form" id="siteSearchForm">
+      <input type="text" class="header-search-input" id="siteSearchInput" placeholder="搜索字体、提示词、分类">
+      <button type="submit" class="header-search-btn">搜索</button>
+    </form>
+    <div class="auth-bar" id="authBar">
+      <a href="/login.html" class="auth-link">登录</a>
+      <span class="auth-sep">|</span>
+      <a href="/register.html" class="auth-link">注册</a>
+    </div>
+  </div>
 </header>
 
 <div class="container">
-<div class="search-bar">
-<input type="text" id="searchInput" placeholder="搜索字体名称..." />
-</div>
-<div class="cat-bar" id="catBar">
-<button class="active" data-cat="">全部</button>
-<button data-cat="黑体">黑体</button>
-<button data-cat="宋体">宋体</button>
-<button data-cat="楷体">楷体</button>
-<button data-cat="艺术体">艺术体</button>
-<button data-cat="像素体">像素体</button>
-<button data-cat="其他">其他</button>
-</div>
-<div class="grid" id="fontGrid">
-<div class="placeholder-block">加载中...</div>
-</div>
-<div class="no-more" id="noMore" style="display:none">— 已加载全部 —</div>
+  <div class="page-filter-title">筛选当前页字体</div>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="仅筛选当前字体列表..." />
+    <button class="search-btn" id="searchBtn">筛选字体</button>
+  </div>
+  <div class="cat-bar" id="catBar">
+    <button class="active" data-cat="">全部</button>
+    <button data-cat="黑体">黑体</button>
+    <button data-cat="宋体">宋体</button>
+    <button data-cat="楷体">楷体</button>
+    <button data-cat="艺术体">艺术体</button>
+    <button data-cat="像素体">像素体</button>
+    <button data-cat="其他">其他</button>
+  </div>
+  <div class="meta-row">
+    <div id="resultMeta">准备加载...</div>
+    <div>每次加载 24 个，滚动到底部继续加载</div>
+  </div>
+  <div class="grid" id="fontGrid"><div class="placeholder-block">加载中...</div></div>
+  <div class="load-wrap"><button class="load-btn" id="loadBtn">加载更多</button></div>
+  <div class="no-more" id="noMore">— 已加载全部 —</div>
 </div>
 
 <script src="/checkauth.js"></script>
+
 <script>
 (function(){
- var currentCat='';
- var currentSearch='';
- var grid=document.getElementById('fontGrid');
- var catBar=document.getElementById('catBar');
- var searchInput=document.getElementById('searchInput');
- var noMore=document.getElementById('noMore');
-
- function escapeHtml(s){
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
- }
- function escapeFontFamily(s){
-  return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
- }
-
- function renderFonts(fonts){
-  if(!fonts.length){grid.innerHTML='<div class=placeholder-block>暂无字体</div>';noMore.style.display='none';return;}
-  grid.innerHTML='';
-  fonts.forEach(function(f){
-   var preview=f.preview_text||f.font_name||'字体';
-   var fname=f.font_name||preview;
-   var family=escapeFontFamily(f.font_class||'');
-   grid.innerHTML+='<div class=font-item onclick="location.href=\'/font/'+f.font_slug+'/index.html\'">'+
-    '<div class="font-preview '+escapeHtml(f.font_class||'')+'" data-font-family="'+escapeHtml(f.font_class||'')+'" style="font-family:\''+family+'\',-apple-system,BlinkMacSystemFont,\'Microsoft YaHei\',sans-serif">'+escapeHtml(preview)+'</div>'+
-    '<div class=font-name>'+escapeHtml(fname)+'</div>'+
-    '<div class=font-cat>'+escapeHtml(f.category||'')+'</div></div>';
+  var form = document.getElementById('siteSearchForm');
+  var input = document.getElementById('siteSearchInput');
+  if(!form || !input) return;
+  var params = new URLSearchParams(window.location.search);
+  var currentQ = (params.get('q') || '').trim();
+  if(currentQ) input.value = currentQ;
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var q = (input.value || '').trim();
+    location.href = '/site-search.html' + (q ? '?q=' + encodeURIComponent(q) : '');
   });
-  noMore.style.display='block';
- }
+})();
+</script>
 
- function loadAll(){
-  grid.innerHTML='<div class=placeholder-block>加载中...</div>';
-  noMore.style.display='none';
-  var url='/api-fonts.php?n=200';
-  if(currentCat) url+='&cat='+encodeURIComponent(currentCat);
-  if(currentSearch) url+='&q='+encodeURIComponent(currentSearch);
-  fetch(url)
-   .then(function(r){return r.json()})
-   .then(renderFonts)
-   .catch(function(){grid.innerHTML='<div class=placeholder-block>加载失败</div>';});
- }
+<script>
+(function(){
+  var PAGE_SIZE = 24;
+  var state = {
+    page: 1, loading: false, hasMore: true, currentCat: '', currentSearch: '',
+    totalLoaded: 0, firstLoad: true
+  };
+  var grid = document.getElementById('fontGrid');
+  var catBar = document.getElementById('catBar');
+  var searchInput = document.getElementById('searchInput');
+  var searchBtn = document.getElementById('searchBtn');
+  var loadBtn = document.getElementById('loadBtn');
+  var noMore = document.getElementById('noMore');
+  var resultMeta = document.getElementById('resultMeta');
+  var observer;
 
- catBar.addEventListener('click',function(e){
-  var btn=e.target.closest('button');
-  if(!btn) return;
-  catBar.querySelectorAll('button').forEach(function(b){b.classList.remove('active');});
-  btn.classList.add('active');
-  currentCat=btn.dataset.cat;
-  currentSearch='';
-  searchInput.value='';
-  loadAll();
- });
-
- var searchTimer;
- searchInput.addEventListener('input',function(){
-  clearTimeout(searchTimer);
-  searchTimer=setTimeout(function(){
-   currentSearch=searchInput.value.trim();
-   currentCat='';
-   catBar.querySelectorAll('button').forEach(function(b){b.classList.remove('active');});
-   var allBtn=catBar.querySelector('button[data-cat=\"\"]');
-   if(allBtn) allBtn.classList.add('active');
-   loadAll();
-  },400);
- });
-
- loadAll();
+  function esc(str){ return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function escapeAttr(str){ return esc(str).replace(/'/g,'&#39;'); }
+  function escapeFontFamily(name){ return String(name || '').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+  function setMeta(text){ resultMeta.textContent = text; }
+  function setLoadState(){
+    loadBtn.classList.toggle('show', state.hasMore && !state.loading && !state.firstLoad);
+    noMore.style.display = (!state.hasMore && !state.firstLoad) ? 'block' : 'none';
+  }
+  function updateUrl(){
+    var url = new URL(window.location.href);
+    if(state.currentSearch) url.searchParams.set('q', state.currentSearch); else url.searchParams.delete('q');
+    if(state.currentCat) url.searchParams.set('cat', state.currentCat); else url.searchParams.delete('cat');
+    window.history.replaceState({}, '', url.pathname + (url.searchParams.toString() ? '?' + url.searchParams.toString() : ''));
+  }
+  function resetList(){
+    state.page = 1; state.hasMore = true; state.totalLoaded = 0; state.firstLoad = true;
+    updateUrl();
+    grid.innerHTML = '<div class="placeholder-block">加载中...</div>';
+    setMeta('加载中...');
+    setLoadState();
+    loadFonts(false);
+  }
+  function buildCard(f){
+    var preview = f.preview_text || f.font_name || '字体';
+    var family = escapeFontFamily(f.font_class || '');
+    return '<div class="font-item" onclick="location.href=\'/font/' + encodeURIComponent(f.font_slug) + '/index.html\'">' +
+      '<div class="font-preview pending" data-font-family="' + escapeAttr(f.font_class || '') + '" style="font-family:-apple-system,BlinkMacSystemFont,\'Microsoft YaHei\',sans-serif">' + esc(preview) + '</div>' +
+      '<div class="font-name">' + esc(f.font_name || preview) + '</div>' +
+      '<div class="font-cat">' + esc(f.category || '') + '</div>' +
+    '</div>';
+  }
+  function hydrateVisibleFonts(scope){
+    if(!observer){
+      observer = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(!entry.isIntersecting) return;
+          var node = entry.target;
+          var family = node.getAttribute('data-font-family') || '';
+          if(family){
+            node.style.fontFamily = "'" + escapeFontFamily(family) + "',-apple-system,BlinkMacSystemFont,'Microsoft YaHei',sans-serif";
+          }
+          node.classList.remove('pending');
+          observer.unobserve(node);
+        });
+      }, {rootMargin:'160px 0px'});
+    }
+    (scope || document).querySelectorAll('.font-preview.pending').forEach(function(node){ observer.observe(node); });
+  }
+  function loadFonts(append){
+    if(state.loading || !state.hasMore) return;
+    state.loading = true;
+    loadBtn.textContent = '加载中...';
+    setLoadState();
+    var pageToLoad = append ? state.page + 1 : 1;
+    var url = '/api-fonts.php?p=' + pageToLoad + '&n=' + PAGE_SIZE;
+    if(state.currentCat) url += '&cat=' + encodeURIComponent(state.currentCat);
+    if(state.currentSearch) url += '&q=' + encodeURIComponent(state.currentSearch);
+    fetch(url)
+      .then(function(r){ return r.json(); })
+      .then(function(fonts){
+        fonts = Array.isArray(fonts) ? fonts : [];
+        state.page = pageToLoad;
+        state.totalLoaded += fonts.length;
+        state.hasMore = fonts.length === PAGE_SIZE;
+        if(!append){ grid.innerHTML = ''; }
+        if(fonts.length){
+          var wrap = document.createElement('div');
+          wrap.innerHTML = fonts.map(buildCard).join('');
+          while(wrap.firstChild){ grid.appendChild(wrap.firstChild); }
+          hydrateVisibleFonts(grid);
+          setMeta('已加载 ' + state.totalLoaded + ' 个字体' + (state.currentSearch ? ' · 关键词：' + state.currentSearch : '') + (state.currentCat ? ' · 分类：' + state.currentCat : ''));
+        } else if(!append) {
+          grid.innerHTML = '<div class="status-card">没有匹配的字体</div>';
+          setMeta('没有匹配的字体');
+          state.hasMore = false;
+        } else {
+          state.hasMore = false;
+        }
+      })
+      .catch(function(){
+        if(!append){ grid.innerHTML = '<div class="status-card">加载失败，请刷新重试</div>'; setMeta('加载失败'); }
+      })
+      .finally(function(){
+        state.loading = false;
+        state.firstLoad = false;
+        loadBtn.textContent = '加载更多';
+        setLoadState();
+      });
+  }
+  function syncFromUrl(){
+    var params = new URLSearchParams(window.location.search);
+    state.currentSearch = (params.get('q') || '').trim();
+    state.currentCat = (params.get('cat') || '').trim();
+    searchInput.value = state.currentSearch;
+    catBar.querySelectorAll('button').forEach(function(btn){ btn.classList.toggle('active', btn.dataset.cat === state.currentCat); });
+    if(!catBar.querySelector('button.active')){ var allBtn = catBar.querySelector('button[data-cat=""]'); if(allBtn) allBtn.classList.add('active'); state.currentCat = ''; }
+  }
+  function applySearch(){ state.currentSearch = searchInput.value.trim(); resetList(); }
+  catBar.addEventListener('click', function(e){
+    var btn = e.target.closest('button'); if(!btn) return;
+    catBar.querySelectorAll('button').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active'); state.currentCat = btn.dataset.cat || ''; resetList();
+  });
+  var searchTimer;
+  searchInput.addEventListener('input', function(){ clearTimeout(searchTimer); searchTimer = setTimeout(applySearch, 350); });
+  searchInput.addEventListener('keydown', function(e){ if(e.key === 'Enter') applySearch(); });
+  searchBtn.addEventListener('click', applySearch);
+  loadBtn.addEventListener('click', function(){ loadFonts(true); });
+  var scrollTimer;
+  window.addEventListener('scroll', function(){
+    if(state.loading || !state.hasMore || state.firstLoad) return;
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(function(){
+      var scrollH = document.documentElement.scrollHeight;
+      var clientH = window.innerHeight || document.documentElement.clientHeight;
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+      if(scrollTop + clientH >= scrollH - 300) loadFonts(true);
+    }, 120);
+  }, {passive:true});
+  syncFromUrl();
+  resetList();
+})();
+</script>
+<script>
+(function(){
+  function enable(){
+    if(!document.body || document.body.classList.contains('filing-mode')) return;
+    var overlay=document.createElement('div');
+    overlay.className='fm-filing-overlay';
+    overlay.innerHTML='<div class="fm-filing-card"><div class="fm-filing-title">网站备案中</div><div class="fm-filing-sub">站点内容暂时关闭，备案完成后恢复访问。</div></div>';
+    document.body.appendChild(overlay);
+    document.body.classList.add('filing-mode');
+  }
+  window.__fmEnableFilingMode=enable;
+  fetch('/wp-json/font-manager/v1/home-assets',{cache:'no-store'})
+    .then(function(r){return r.ok ? r.json() : null;})
+    .then(function(data){ if(data && data.filing_mode){ enable(); } })
+    .catch(function(){});
 })();
 </script>
 </body>

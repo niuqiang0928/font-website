@@ -6,43 +6,73 @@
 <title>免费字体下载</title>
 <link rel="stylesheet" href="/wp-content/uploads/font-upload/fonts.css">
 <style>
+
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#0f0f0f;font-family:-apple-system,BlinkMacSystemFont,"Microsoft YaHei",sans-serif;color:#fff}
-.header{background:#1a1a1a;padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:60px}
-.logo{font-size:20px;font-weight:700;color:#fff;text-decoration:none;display:flex;align-items:center;gap:10px}
-.logo-icon{font-size:24px}
-.header-nav{display:flex;gap:8px}
-.header-nav a{padding:6px 16px;border-radius:20px;color:#999;text-decoration:none;font-size:14px;transition:all .2s}
-.header-nav a:hover{color:#fff}
-.header-nav a.active{background:#fff;color:#000;font-weight:600}
-.auth-bar{display:flex;align-items:center;gap:12px}
-.auth-link{color:#999;text-decoration:none;font-size:14px;transition:color .2s}
-.auth-link:hover{color:#fff}
-.user-name{color:#fff;font-size:14px}
+body{background:radial-gradient(circle at top,rgba(255,255,255,.06),transparent 26%),linear-gradient(180deg,#0d0d10 0%,#0a0a0d 100%);font-family:-apple-system,BlinkMacSystemFont,"Microsoft YaHei",sans-serif;color:#fff;min-height:100vh;padding-top:112px}
+.header{position:fixed;top:14px;left:0;right:0;z-index:120;padding:0 18px;pointer-events:none}
+.header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:18px;padding:14px 18px;border:1px solid rgba(255,255,255,.09);border-radius:24px;background:rgba(14,14,18,.74);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 18px 46px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.05);pointer-events:auto}
+.header-left{display:flex;align-items:center;gap:18px;min-width:0;flex:1}
+.logo{display:inline-flex;align-items:center;text-decoration:none;flex:0 0 auto}
+.logo img{height:34px;display:block}
+.header-nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap;min-width:0}
+.header-nav a{position:relative;padding:10px 16px;border-radius:999px;color:rgba(255,255,255,.72);text-decoration:none;font-size:14px;letter-spacing:.2px;background:rgba(255,255,255,.02);border:1px solid transparent;transition:all .24s ease}
+.header-nav a:hover{color:#fff;background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.08);transform:translateY(-1px)}
+.header-nav a.active{color:#0b0b0d;font-weight:700;background:linear-gradient(180deg,#ffffff 0%,#ececec 100%);box-shadow:0 8px 18px rgba(255,255,255,.12)}
+.header-search-form{flex:0 1 420px;display:flex;gap:10px;align-items:center;min-width:260px}
+.header-search-input{flex:1;width:100%;padding:12px 16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#fff;border-radius:999px;font-size:14px;outline:none}
+.header-search-input:focus{border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.06)}
+.header-search-input::placeholder{color:rgba(255,255,255,.34)}
+.header-search-btn{padding:12px 18px;border:none;border-radius:999px;background:#fff;color:#0b0b0d;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap}
+.header-search-btn:hover{background:#ececec}
+.auth-bar{display:flex;align-items:center;gap:10px;flex:0 0 auto;padding:6px;border-radius:999px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+.auth-link{padding:10px 16px;border-radius:999px;color:rgba(255,255,255,.72);text-decoration:none;font-size:14px;transition:all .24s ease}
+.auth-link:hover{color:#fff;background:rgba(255,255,255,.05)}
+.auth-link:last-of-type{background:#fff;color:#0b0b0d;font-weight:700}
+.auth-link:last-of-type:hover{background:#ececec}
+.user-name{padding:10px 16px;border-radius:999px;color:#fff;font-size:14px;background:rgba(255,255,255,.04)}
+.auth-sep{display:none}
+@media(max-width:1100px){
+ body{padding-top:128px}
+ .header-search-form{flex-basis:320px}
+}
+@media(max-width:900px){
+ body{padding-top:170px}
+ .header{top:10px;padding:0 12px}
+ .header-inner{gap:12px;padding:12px 14px;flex-wrap:wrap}
+ .header-left{gap:14px;flex-wrap:wrap;order:1;width:100%}
+ .header-search-form{order:2;flex:1 1 100%;min-width:0}
+ .auth-bar{order:3;margin-left:auto}
+ .header-nav{gap:8px}
+}
+@media(max-width:600px){
+ body{padding-top:186px}
+ .header-inner{border-radius:20px}
+ .header-search-form{flex-direction:column;align-items:stretch}
+ .header-search-btn{width:100%}
+ .header-left{gap:12px}
+ .header-nav a{padding:8px 12px;font-size:13px}
+ .logo img{height:30px}
+ .auth-bar{gap:6px;padding:4px}
+ .auth-link,.user-name{padding:9px 12px;font-size:13px}
+}
 
 .carousel-wrap{padding:20px 20px 0;max-width:1400px;margin:0 auto;display:grid;grid-template-columns:3fr 1fr;gap:16px;height:360px}
 .carousel-main{background:#1e1e1e;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;position:relative;overflow:hidden;cursor:pointer;border:1px solid #2a2a2a}
 .carousel-main:hover{border-color:#3a3a3a}
-.carousel-main .big-title{font-size:32px;font-weight:700;margin-bottom:8px}
-.carousel-main .sub{font-size:13px;opacity:.5}
 .carousel-side{display:grid;grid-template-rows:1fr 1fr;gap:16px}
 .carousel-side .sq{background:#1e1e1e;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-size:14px;cursor:pointer;border:1px solid #2a2a2a}
 .carousel-side .sq:hover{border-color:#3a3a3a}
-.carousel-side .sq .txt{font-size:14px;font-weight:600;margin-bottom:6px}
-.carousel-side .sq .sub{font-size:11px;opacity:.5}
-
 .carousel-main,.carousel-side .sq{position:relative;overflow:hidden}
 .carousel-main .carousel-image,.carousel-side .sq .carousel-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-.carousel-main .overlay,.carousel-side .sq .overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,.45));display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;z-index:1}
-.carousel-main .overlay .big-title{margin-bottom:8px}
-.carousel-main .overlay .sub,.carousel-side .sq .overlay .sub{opacity:.8}
+.carousel-main .overlay,.carousel-side .sq .overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.36));display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;z-index:1}
+.carousel-main .overlay .big-title{font-size:32px;font-weight:700;margin-bottom:8px}
+.carousel-main .overlay .sub,.carousel-side .sq .overlay .sub{opacity:.8;font-size:13px}
 .carousel-side .sq .overlay .txt{font-size:18px;font-weight:600;margin-bottom:6px}
 .carousel-main.has-link,.carousel-side .sq.has-link{cursor:pointer}
 .carousel-dots{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:8px;z-index:2}
 .carousel-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.45)}
 .carousel-dot.active{background:#fff}
-
-.section-wrap{padding:20px;max-width:1400px;margin:0 auto}
+.section-wrap{padding:24px 20px 0;max-width:1400px;margin:0 auto}
 .section-card{background:#1a1a1a;border-radius:16px;padding:40px 30px 80px;margin-bottom:20px;position:relative;border:1px solid #2a2a2a;display:flex;flex-direction:column}
 .section-title{color:#fff;font-size:28px;font-weight:700;text-align:center;margin-bottom:12px}
 .section-hint{color:rgba(255,255,255,.4);font-size:13px;text-align:center;margin-bottom:24px}
@@ -54,9 +84,9 @@ body{background:#0f0f0f;font-family:-apple-system,BlinkMacSystemFont,"Microsoft 
 .section-grid .item p{color:rgba(255,255,255,.7);font-size:13px;line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .font-item{background:#222;border-radius:12px;padding:20px;cursor:pointer;transition:background .2s;display:flex;flex-direction:column;align-items:center;text-align:center;border:1px solid #2a2a2a}
 .font-item:hover{background:#2a2a2a;border-color:#3a3a3a}
-.font-item .font-preview{font-size:36px;color:#fff;margin-bottom:12px;height:60px;display:flex;align-items:center;justify-content:center}
-.font-item .font-name{color:rgba(255,255,255,.7);font-size:13px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;width:100%}
-.font-item .font-cat{color:rgba(255,255,255,.3);font-size:11px;margin-top:6px}
+.font-preview{font-size:36px;color:#fff;margin-bottom:12px;height:60px;display:flex;align-items:center;justify-content:center}
+.font-name{color:rgba(255,255,255,.7);font-size:13px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;width:100%}
+.font-cat{color:rgba(255,255,255,.3);font-size:11px;margin-top:6px}
 .more-btn{position:absolute;bottom:20px;right:24px;background:#333;border:1px solid #444;color:#fff;padding:8px 20px;border-radius:50px;font-size:13px;cursor:pointer;text-decoration:none;transition:all .2s;display:inline-block;line-height:1.4}
 .more-btn:hover{background:#444;border-color:#555}
 .placeholder-block{background:#222;border-radius:8px;height:80px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.2);font-size:13px;border:1px solid #2a2a2a}
@@ -67,159 +97,182 @@ body{background:#0f0f0f;font-family:-apple-system,BlinkMacSystemFont,"Microsoft 
  .section-grid.font-grid{grid-template-columns:repeat(2,1fr)}
 }
 @media(max-width:600px){
- .header{padding:0 16px}
  .section-grid{grid-template-columns:1fr}
  .section-grid.font-grid{grid-template-columns:repeat(2,1fr)}
  .carousel-side{grid-template-columns:1fr}
 }
 </style>
+<style>
+.fm-filing-overlay{display:none;position:fixed;inset:0;z-index:99999;background:#0b0b0d;align-items:center;justify-content:center;padding:24px}
+.fm-filing-card{width:min(560px,100%);background:#141418;border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:36px 28px;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.42)}
+.fm-filing-title{font-size:32px;font-weight:700;margin-bottom:10px}
+.fm-filing-sub{color:rgba(255,255,255,.55);font-size:15px;line-height:1.8}
+body.filing-mode{padding-top:0 !important;overflow:hidden}
+body.filing-mode>*{display:none !important}
+body.filing-mode>.fm-filing-overlay{display:flex !important}
+</style>
 </head>
 <body>
+
 <header class="header">
-<a href="/font-index.html" class="logo"><img src="/wp-content/uploads/logo-zitipai.png" height="36" alt="logo"></a>
-<nav class="header-nav">
-<a href="/font-index.html" class="active">首页</a>
-<a href="/font-prompts.html">字体提示词</a>
-<a href="/fonts.html">免费字体</a>
-</nav>
-<div class="auth-bar" id="authBar">
-<a href="/login.html" class="auth-link">登录</a>
-<span style="color:#444">|</span>
-<a href="/register.html" class="auth-link">注册</a>
-</div>
+  <div class="header-inner">
+    <div class="header-left">
+      <a href="/font-index.html" class="logo"><img src="/wp-content/uploads/logo-zitipai.png" alt="logo"></a>
+      <nav class="header-nav">
+        <a href="/font-index.html" class="active">首页</a>
+        <a href="/font-prompts.html">字体提示词</a>
+        <a href="/fonts.html">免费字体</a>
+      </nav>
+    </div>
+    <form class="header-search-form" id="siteSearchForm">
+      <input type="text" class="header-search-input" id="siteSearchInput" placeholder="搜索字体、提示词、分类">
+      <button type="submit" class="header-search-btn">搜索</button>
+    </form>
+    <div class="auth-bar" id="authBar">
+      <a href="/login.html" class="auth-link">登录</a>
+      <span class="auth-sep">|</span>
+      <a href="/register.html" class="auth-link">注册</a>
+    </div>
+  </div>
 </header>
 
 <div class="carousel-wrap">
-<div class="carousel-main">
-<div class="big-title">轮播图</div>
-<div class="sub">(后台管理员自主上传)</div>
-</div>
-<div class="carousel-side">
-<div class="sq"><div class="txt">正方形图片展示</div><div class="sub">后台管理员自主上传</div></div>
-<div class="sq"><div class="txt">正方形图片展示</div><div class="sub">后台管理员自主上传</div></div>
-</div>
+  <div class="carousel-main"></div>
+  <div class="carousel-side">
+    <div class="sq"></div>
+    <div class="sq"></div>
+  </div>
 </div>
 
 <div class="section-wrap">
-<div class="section-card">
-<div class="section-title">字体提示词展示</div>
-<div class="section-hint">展示3行，右下角加一个点击查看更多</div>
-<div class="section-grid" id="promptGrid">
-<div class="placeholder-block">加载中...</div>
-</div>
-<a href="/font-prompts.html" class="more-btn">点击查看更多 →</a>
-</div>
+  <div class="section-card">
+    <div class="section-title">字体提示词展示</div>
+    <div class="section-hint">展示 3 行，右下角可查看更多</div>
+    <div class="section-grid" id="promptGrid"><div class="placeholder-block">加载中...</div></div>
+    <a href="/font-prompts.html" class="more-btn">点击查看更多 →</a>
+  </div>
 </div>
 
 <div class="section-wrap">
-<div class="section-card">
-<div class="section-title">免费字体展示</div>
-<div class="section-hint">展示4行，右下角加一个点击查看更多</div>
-<div class="section-grid font-grid" id="fontGrid">
-<div class="placeholder-block">加载中...</div>
-</div>
-<a href="/fonts.html" class="more-btn">点击查看更多 →</a>
-</div>
+  <div class="section-card">
+    <div class="section-title">免费字体展示</div>
+    <div class="section-hint">展示 4 行，右下角可查看更多</div>
+    <div class="section-grid font-grid" id="fontGrid"><div class="placeholder-block">加载中...</div></div>
+    <a href="/fonts.html" class="more-btn">点击查看更多 →</a>
+  </div>
 </div>
 
 <script src="/checkauth.js"></script>
+
 <script>
 (function(){
- fetch('/api-prompts.php?n=9')
-  .then(function(r){return r.json()})
-  .then(function(d){
-   var g=document.getElementById('promptGrid');
-   if(!d.items||!d.items.length){g.innerHTML='<div class="placeholder-block">暂无数据</div>';return;}
-   g.innerHTML='';
-   d.items.forEach(function(item){
-    g.innerHTML+='<div class="item" onclick="location.href=\'/font-prompts.html\'"><img src="'+item.image_url+'" alt=""><p>'+item.prompt.replace(/</g,'&lt;')+'</p></div>';
-   });
-  })
-  .catch(function(){document.getElementById('promptGrid').innerHTML='<div class="placeholder-block">加载失败</div>';});
+  var form = document.getElementById('siteSearchForm');
+  var input = document.getElementById('siteSearchInput');
+  if(!form || !input) return;
+  var params = new URLSearchParams(window.location.search);
+  var currentQ = (params.get('q') || '').trim();
+  if(currentQ) input.value = currentQ;
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var q = (input.value || '').trim();
+    location.href = '/site-search.html' + (q ? '?q=' + encodeURIComponent(q) : '');
+  });
+})();
+</script>
 
- function escapeHtml(s){
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
- }
- function escapeFontFamily(s){
-  return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
- }
-
- function applyLink(el, link){
-  if(link){
-   el.classList.add('has-link');
-   el.onclick=function(){location.href=link;};
-  }else{
-   el.classList.remove('has-link');
-   el.onclick=null;
+<script>
+(function(){
+  function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function escapeFontFamily(s){ return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+  function applyLink(el, link){
+    if(link){ el.classList.add('has-link'); el.onclick=function(){ location.href = link; }; }
+    else{ el.classList.remove('has-link'); el.onclick=null; }
   }
- }
-
- function renderMainSlide(slides, index){
-  if(!slides.length) return;
-  var slide = slides[index] || {};
-  var main = document.querySelector('.carousel-main');
-  if(!main) return;
-  var title = escapeHtml(slide.title || '轮播图');
-  var sub = escapeHtml(slide.sub || '');
-  main.innerHTML =
-   '<img class="carousel-image" src="'+escapeHtml(slide.image_url||'')+'" alt="">'+
-   '<div class="overlay"><div class="big-title">'+title+'</div><div class="sub">'+sub+'</div></div>' +
-   (slides.length > 1 ? '<div class="carousel-dots">' + slides.map(function(_,i){ return '<span class="carousel-dot'+(i===index?' active':'')+'"></span>'; }).join('') + '</div>' : '');
-  applyLink(main, slide.link || '');
- }
-
- function renderSquare(el, item, fallbackTitle){
-  if(!el) return;
-  if(!item || !item.image_url){
-   return;
+  function renderMainSlide(slides, index){
+    if(!slides.length) return;
+    var slide = slides[index] || {};
+    var main = document.querySelector('.carousel-main');
+    if(!main) return;
+    var title = escapeHtml(slide.title || '');
+    var sub = escapeHtml(slide.sub || '');
+    var overlay = (title || sub) ? '<div class="overlay">' + (title ? '<div class="big-title">'+title+'</div>' : '') + (sub ? '<div class="sub">'+sub+'</div>' : '') + '</div>' : '';
+    main.innerHTML = '<img class="carousel-image" src="'+escapeHtml(slide.image_url||'')+'" alt="">' + overlay + (slides.length > 1 ? '<div class="carousel-dots">' + slides.map(function(_,i){ return '<span class="carousel-dot'+(i===index?' active':'')+'"></span>'; }).join('') + '</div>' : '');
+    applyLink(main, slide.link || '');
   }
-  var title = escapeHtml(item.title || fallbackTitle || '');
-  var sub = escapeHtml(item.sub || '');
-  el.innerHTML =
-   '<img class="carousel-image" src="'+escapeHtml(item.image_url||'')+'" alt="">'+
-   '<div class="overlay"><div class="txt">'+title+'</div><div class="sub">'+sub+'</div></div>';
-  applyLink(el, item.link || '');
- }
+  function renderSquare(el, item){
+    if(!el || !item || !item.image_url) return;
+    var title = escapeHtml(item.title || '');
+    var sub = escapeHtml(item.sub || '');
+    var overlay = (title || sub) ? '<div class="overlay">' + (title ? '<div class="txt">'+title+'</div>' : '') + (sub ? '<div class="sub">'+sub+'</div>' : '') + '</div>' : '';
+    el.innerHTML = '<img class="carousel-image" src="'+escapeHtml(item.image_url||'')+'" alt="">' + overlay;
+    applyLink(el, item.link || '');
+  }
 
- fetch('/wp-json/font-manager/v1/home-assets')
-  .then(function(r){ return r.ok ? r.json() : null; })
-  .then(function(data){
-   if(!data) return;
-   var slides = Array.isArray(data.carousel) ? data.carousel.filter(function(it){ return it && it.image_url; }) : [];
-   var squares = Array.isArray(data.squares) ? data.squares : [];
-   if(slides.length){
-    var current = 0;
-    renderMainSlide(slides, current);
-    if(slides.length > 1){
-     setInterval(function(){
-      current = (current + 1) % slides.length;
-      renderMainSlide(slides, current);
-     }, 4000);
-    }
-   }
-   var sqEls = document.querySelectorAll('.carousel-side .sq');
-   renderSquare(sqEls[0], squares[0], '方形图片 1');
-   renderSquare(sqEls[1], squares[1], '方形图片 2');
-  })
-  .catch(function(){});
+  fetch('/api-prompts.php?n=9')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var g = document.getElementById('promptGrid');
+      if(!d.items || !d.items.length){ g.innerHTML = '<div class="placeholder-block">暂无数据</div>'; return; }
+      g.innerHTML = '';
+      d.items.forEach(function(item){
+        g.innerHTML += '<div class="item" onclick="location.href=\'/font-prompts.html?q=' + encodeURIComponent(item.prompt || '') + '\'"><img src="' + escapeHtml(item.image_url || '') + '" alt=""><p>' + escapeHtml(item.prompt || '') + '</p></div>';
+      });
+    })
+    .catch(function(){ document.getElementById('promptGrid').innerHTML = '<div class="placeholder-block">加载失败</div>'; });
 
- fetch('/api-fonts.php?n=16')
-  .then(function(r){return r.json()})
-  .then(function(d){
-   var g=document.getElementById('fontGrid');
-   if(!d.length){g.innerHTML='<div class="placeholder-block">暂无字体</div>';return;}
-   g.innerHTML='';
-   d.forEach(function(f){
-    var preview=f.preview_text||f.font_name||'字体';
-    var fname=f.font_name||preview;
-    var family = escapeFontFamily(f.font_class||'');
-    g.innerHTML+='<div class="font-item" onclick="location.href=\'/font/'+f.font_slug+'/index.html\'">'+
-     '<div class="font-preview '+escapeHtml(f.font_class||'')+'" data-font-family="'+escapeHtml(f.font_class||'')+'" style="font-family:\''+family+'\',-apple-system,BlinkMacSystemFont,\'Microsoft YaHei\',sans-serif">'+escapeHtml(preview)+'</div>'+
-     '<div class="font-name">'+escapeHtml(fname)+'</div>'+
-     '<div class="font-cat">'+escapeHtml(f.category||'')+'</div></div>';
-   });
-  })
-  .catch(function(){document.getElementById('fontGrid').innerHTML='<div class="placeholder-block">加载失败</div>';});
+  fetch('/wp-json/font-manager/v1/home-assets')
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(data){
+      if(!data) return;
+      var slides = Array.isArray(data.carousel) ? data.carousel.filter(function(it){ return it && it.image_url; }) : [];
+      var squares = Array.isArray(data.squares) ? data.squares : [];
+      if(slides.length){
+        var current = 0;
+        renderMainSlide(slides, current);
+        if(slides.length > 1){
+          setInterval(function(){ current = (current + 1) % slides.length; renderMainSlide(slides, current); }, 4000);
+        }
+      }
+      var sqEls = document.querySelectorAll('.carousel-side .sq');
+      renderSquare(sqEls[0], squares[0]);
+      renderSquare(sqEls[1], squares[1]);
+    })
+    .catch(function(){});
+
+  fetch('/api-fonts.php?n=16')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var g = document.getElementById('fontGrid');
+      if(!d.length){ g.innerHTML = '<div class="placeholder-block">暂无字体</div>'; return; }
+      g.innerHTML = '';
+      d.forEach(function(f){
+        var preview = f.preview_text || f.font_name || '字体';
+        var fname = f.font_name || preview;
+        var family = escapeFontFamily(f.font_class || '');
+        g.innerHTML += '<div class="font-item" onclick="location.href=\'/font/' + encodeURIComponent(f.font_slug) + '/index.html\'">' +
+          '<div class="font-preview" style="font-family:\'' + family + '\',-apple-system,BlinkMacSystemFont,\'Microsoft YaHei\',sans-serif">' + escapeHtml(preview) + '</div>' +
+          '<div class="font-name">' + escapeHtml(fname) + '</div>' +
+          '<div class="font-cat">' + escapeHtml(f.category || '') + '</div></div>';
+      });
+    })
+    .catch(function(){ document.getElementById('fontGrid').innerHTML = '<div class="placeholder-block">加载失败</div>'; });
+})();
+</script>
+<script>
+(function(){
+  function enable(){
+    if(!document.body || document.body.classList.contains('filing-mode')) return;
+    var overlay=document.createElement('div');
+    overlay.className='fm-filing-overlay';
+    overlay.innerHTML='<div class="fm-filing-card"><div class="fm-filing-title">网站备案中</div><div class="fm-filing-sub">站点内容暂时关闭，备案完成后恢复访问。</div></div>';
+    document.body.appendChild(overlay);
+    document.body.classList.add('filing-mode');
+  }
+  window.__fmEnableFilingMode=enable;
+  fetch('/wp-json/font-manager/v1/home-assets',{cache:'no-store'})
+    .then(function(r){return r.ok ? r.json() : null;})
+    .then(function(data){ if(data && data.filing_mode){ enable(); } })
+    .catch(function(){});
 })();
 </script>
 </body>
