@@ -364,7 +364,19 @@ function fm_build_detail_page_html($font){
     .login-modal p{color:#999;margin-bottom:24px}
     .login-modal-btn{display:inline-flex;align-items:center;gap:8px;background:#fff;color:#000;padding:12px 32px;border-radius:50px;font-size:15px;font-weight:600;text-decoration:none;margin-bottom:16px}
     .close-modal{position:absolute;top:20px;right:20px;background:none;border:none;color:#666;font-size:24px;cursor:pointer}
-    </style><style>'.fm_filing_mode_overlay_style().'</style><link rel="stylesheet" href="'.$fonts_css.'"></head><body><header class="header"><a href="/font-index.html" class="logo"><span class="logo-icon">←</span> 免费字体</a><div class="auth-bar" id="authBar"><a href="/login.html" class="auth-link">登录</a><span style="color:#555">|</span><a href="/register.html" class="auth-link">注册</a></div></header><div class="container"><div class="font-detail"><div class="font-header"><div class="font-title">'.$font_name_html.'</div><div class="font-meta"><span class="tag">'.$category_html.'</span><span class="tag">'.$ext_html.'</span><span class="tag">'.$size_html.'</span></div></div><div class="preview-section"><div class="preview-label">字体预览</div><div class="preview-box"><div class="preview-main '.$family_attr.'" id="previewText" data-font-family="'.$family_attr.'" style="font-family:\''.$style_family.'\',-apple-system,BlinkMacSystemFont,\'Microsoft YaHei\',sans-serif">'.$preview_html.'</div></div><div class="preview-input-wrap"><div class="preview-hint">可自由输入文字预览效果</div><input type="text" class="preview-input" id="previewInput" placeholder="输入任意文字预览效果…" value="'.$preview_html.'"></div></div><div class="font-info-grid"><div class="info-card"><div class="info-label">字体名称</div><div class="info-value">'.$font_name_html.'</div></div><div class="info-card"><div class="info-label">字体格式</div><div class="info-value">'.$ext_html.'</div></div><div class="info-card"><div class="info-label">文件大小</div><div class="info-value">'.$size_html.'</div></div><div class="info-card"><div class="info-label">字体分类</div><div class="info-value">'.$category_html.'</div></div></div><div class="download-section"><button class="download-btn" id="downloadBtn" data-url="'.$download_attr.'">↓ 下载字体文件</button></div></div></div><div id="loginModal" class="login-modal"><div class="login-modal-content"><button class="close-modal" onclick="closeLoginModal()">×</button><h3>请先登录</h3><p>登录后才能下载字体文件</p><a href="/login.html" class="login-modal-btn">立即登录</a></div></div><script src="/checkauth.js"></script>'.fm_filing_mode_boot_script().'<script>document.getElementById("previewInput").addEventListener("input",function(){var t=this.value||this.getAttribute("placeholder");document.getElementById("previewText").textContent=t});</script></body></html>';
+    </style><style>'.fm_filing_mode_overlay_style().'</style><link rel="stylesheet" href="'.$fonts_css.'"></head><body><header class="header"><a href="/font-index.html" class="logo"><span class="logo-icon">←</span> 免费字体</a><div class="auth-bar" id="authBar"><a href="/login.html" class="auth-link">登录</a><span style="color:#555">|</span><a href="/register.html" class="auth-link">注册</a></div></header><div class="container"><div class="font-detail"><div class="font-header"><div class="font-title">'.$font_name_html.'</div><div class="font-meta"><span class="tag">'.$category_html.'</span><span class="tag">'.$ext_html.'</span><span class="tag">'.$size_html.'</span></div></div><div class="preview-section"><div class="preview-label">字体预览</div><div class="preview-box"><div class="preview-main '.$family_attr.'" id="previewText" data-font-family="'.$family_attr.'" style="font-family:\''.$style_family.'\',-apple-system,BlinkMacSystemFont,\'Microsoft YaHei\',sans-serif">'.$preview_html.'</div></div><div class="preview-input-wrap"><div class="preview-hint">可自由输入文字预览效果</div><input type="text" class="preview-input" id="previewInput" placeholder="输入任意文字预览效果…" value="'.$preview_html.'"></div></div><div class="font-info-grid"><div class="info-card"><div class="info-label">字体名称</div><div class="info-value">'.$font_name_html.'</div></div><div class="info-card"><div class="info-label">字体格式</div><div class="info-value">'.$ext_html.'</div></div><div class="info-card"><div class="info-label">文件大小</div><div class="info-value">'.$size_html.'</div></div><div class="info-card"><div class="info-label">字体分类</div><div class="info-value">'.$category_html.'</div></div></div><div class="download-section"><button class="download-btn" id="downloadBtn" data-url="'.$download_attr.'">↓ 下载字体文件</button><div class="disclaimer-section" style="margin-top:24px;padding:18px 20px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:12px;font-size:12px;color:rgba(255,255,255,.55);line-height:2;text-align:center">
+<div>
+本字体由网络搜集或用户上传，仅限学习交流使用，版权归原作者所有，未经版权方许可不得用于商业用途,否则后果由您自行承担。<br>
+如果您是字体版权方并不希望本站检索/展示您的字体，请联系本站处理。<br>
+对于本站标记为可免费商用的字体，因为信息可能的变动，使用之前请自行再次确认是否可以免费商用，本网站不对信息的实时性准确性做担保。
+</div>
+</div></div><div id="loginModal"12px;border:1px solid #2a2a2a">
+<div style="color:#999;font-size:13px;line-height:1.9">
+本字体由网络搜集或用户上传，仅限学习交流使用，版权归原作者所有，未经版权方许可不得用于商业用途,否则后果由您自行承担。<br>
+如果您是字体版权方并不希望本站检索/展示您的字体，请联系本站处理。<br>
+对于本站标记为可免费商用的字体，因为信息可能的变动，使用之前请自行再次确认是否可以免费商用，本网站不对信息的实时性准确性做担保。
+</div>
+</div><div id="loginModal" class="login-modal"><div class="login-modal-content"><button class="close-modal" onclick="closeLoginModal()">×</button><h3>请先登录</h3><p>登录后才能下载字体文件</p><a href="/login.html" class="login-modal-btn">立即登录</a></div></div><script src="/checkauth.js"></script>'.fm_filing_mode_boot_script().'<script>document.getElementById("previewInput").addEventListener("input",function(){var t=this.value||this.getAttribute("placeholder");document.getElementById("previewText").textContent=t});</script></body></html>';
 }
 
 function fm_generate_detail_page($id,$font_name,$font_slug,$font_file,$font_class,$category,$preview_text,$file_size,$font_url){
@@ -465,24 +477,55 @@ function fm_admin_page(){
     $cat_list = ["宋体","楷体","黑体","艺术体","像素体","编程字体","英文","其他"];
     $prompt_cat_list = fm_get_prompt_categories();
 ?>
-<div class="wrap">
-<h1>字体管理 <button class="fm-refresh" onclick="fmRebuildFontAssets()">修复并重建详情页 + fonts.css</button></h1>
+<div class="wrap fm-admin-wrap">
+<div class="fm-page-header">
+    <div>
+        <h1 class="fm-page-title">字体管理</h1>
+        <p class="fm-page-desc">统一管理首页素材、提示词与字体资源。建议先上传数据，再进行删除和重建操作。</p>
+    </div>
+    <button class="fm-refresh" onclick="fmRebuildFontAssets()">修复并重建详情页 + fonts.css</button>
+</div>
+<div class="fm-admin-nav">
+    <a href="#fm-section-home">首页展示</a>
+    <a href="#fm-section-prompts">提示词上传</a>
+    <a href="#fm-section-prompt-list">提示词列表</a>
+    <a href="#fm-section-upload-font">字体上传</a>
+    <a href="#fm-section-font-list">字体列表</a>
+</div>
+<div class="fm-overview">
+    <div class="fm-stat"><span>字体总数</span><strong><?php echo count($db_fonts); ?></strong></div>
+    <div class="fm-stat"><span>提示词总数</span><strong><?php echo count($db_prompts); ?></strong></div>
+    <div class="fm-stat"><span>字体分类</span><strong><?php echo count($cat_list); ?></strong></div>
+    <div class="fm-stat"><span>提示词分类</span><strong><?php echo count($prompt_cat_list); ?></strong></div>
+</div>
 <style>
-.fm-form{background:#fff;padding:20px;border-radius:8px;margin-top:20px;max-width:600px}
-.fm-form h2{font-size:18px;margin-bottom:15px}
-.fm-row{margin-bottom:15px}
-.fm-row label{display:block;font-weight:bold;margin-bottom:5px}
-.fm-row input,.fm-row select{width:100%;padding:8px;font-size:14px;border:1px solid #ccc;border-radius:4px}
-.fm-btn{background:#2271b1;color:#fff;padding:10px 20px;border:none;border-radius:4px;cursor:pointer;font-size:14px}
+.fm-admin-wrap{max-width:1380px}
+.fm-page-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin:14px 0 10px}
+.fm-page-title{margin:0;font-size:30px;line-height:1.15}
+.fm-page-desc{margin:8px 0 0;color:#646970}
+.fm-admin-nav{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.fm-admin-nav a{display:inline-flex;align-items:center;padding:6px 12px;border-radius:999px;border:1px solid #dcdcde;background:#fff;color:#1d2327;text-decoration:none;font-size:12px}
+.fm-admin-nav a:hover{background:#f6f7f7}
+.fm-overview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.fm-stat{background:#fff;border:1px solid #dcdcde;border-radius:10px;padding:14px}
+.fm-stat span{display:block;color:#646970;font-size:12px}
+.fm-stat strong{display:block;margin-top:6px;font-size:22px;line-height:1.1;color:#1d2327}
+.fm-panel,.fm-form,.fm-list{background:#fff;padding:20px;border-radius:12px;border:1px solid #dcdcde;margin-top:16px;max-width:none}
+.fm-panel h2,.fm-form h2,.fm-list h2{font-size:20px;margin:0 0 8px}
+.fm-panel-intro{margin:0 0 16px;color:#646970}
+.fm-row{margin-bottom:14px}
+.fm-row label{display:block;font-weight:600;margin-bottom:6px}
+.fm-row input,.fm-row select,.fm-row textarea{width:100%;padding:9px 10px;font-size:14px;border:1px solid #c3c4c7;border-radius:6px}
+.fm-row input:focus,.fm-row select:focus,.fm-row textarea:focus{border-color:#2271b1;box-shadow:0 0 0 1px #2271b1;outline:none}
+.fm-btn{background:#2271b1;color:#fff;padding:10px 18px;border:none;border-radius:6px;cursor:pointer;font-size:14px}
 .fm-btn:hover{background:#135e96}
-.fm-list{margin-top:30px}
-.fm-list table{width:100%;border-collapse:collapse}
-.fm-list th,.fm-list td{padding:10px;border:1px solid #ddd;text-align:left}
-.fm-list th{background:#f5f5f5}
-.fm-refresh{background:#00a32a;color:#fff;padding:8px 16px;border:none;border-radius:4px;cursor:pointer;margin-left:10px;font-size:14px}
+.fm-refresh{background:#00a32a;color:#fff;padding:10px 16px;border:none;border-radius:6px;cursor:pointer;font-size:13px;white-space:nowrap}
 .fm-refresh:hover{background:#008a20}
 .fm-delete{color:#b32d2e;cursor:pointer;text-decoration:none}
-.fm-prompt-form{max-width:1100px}
+.fm-delete:hover{text-decoration:underline}
+.fm-muted{color:#646970}
+.fm-msg{margin-left:10px;color:#646970}
+.fm-helper{margin:-4px 0 12px;color:#646970;font-size:12px}
 .fm-prompt-layout{display:grid;grid-template-columns:340px 1fr;gap:24px}
 .fm-prompt-image-box{background:#f8f8f8;border:1px solid #ddd;border-radius:10px;padding:14px}
 .fm-prompt-preview{width:100%;aspect-ratio:1/1;background:#f1f1f1;border:1px dashed #ccc;border-radius:10px;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#999}
@@ -491,48 +534,16 @@ function fm_admin_page(){
 .fm-prompt-list td img{width:72px;height:72px;object-fit:cover;border-radius:8px;border:1px solid #ddd;background:#f6f6f6;display:block}
 .fm-prompt-text{max-width:520px;white-space:pre-wrap;word-break:break-word;color:#333}
 .fm-inline-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.fm-inline-row input{flex:1;min-width:220px}
 .fm-cat-manage{margin-top:10px;padding:12px;border:1px dashed #ddd;border-radius:10px;background:#fafafa}
 .fm-cat-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .fm-cat-tag{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#f0f0f1;border:1px solid #dcdcde;font-size:12px}
 .fm-cat-tag button{border:none;background:transparent;color:#b32d2e;cursor:pointer;padding:0;font-size:14px;line-height:1}
-@media(max-width:900px){.fm-prompt-layout{grid-template-columns:1fr}}
-</style>
-
-
-<?php $home_assets = fm_get_home_assets(); ?>
-<div class="fm-form" style="max-width:1100px">
-<h2>首页展示管理 / 全站备案模式</h2>
-<p style="margin:0 0 16px;color:#666">这里管理首页顶部的大轮播图，以及右侧两张方形图片。保存后，前台 <code>/font-index.html</code> 会自动读取并展示；同时也可以开启全站备案模式。</p>
-
-<div style="margin:0 0 18px;padding:14px 16px;border:1px solid #dcdcde;border-radius:10px;background:#fafafa">
-    <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer">
-        <input type="checkbox" id="fmFilingMode" style="margin-top:2px" <?php checked(!empty($home_assets['filing_mode'])); ?>>
-        <span>
-            <strong>开启备案模式</strong><br>
-            <span style="color:#666">勾选并保存后，全站会进入备案模式：首页、字体列表、提示词页、搜索页，以及重建后的字体详情页都会隐藏内容；取消勾选并保存后恢复正常展示。</span>
-        </span>
-    </label>
-</div>
-
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
-    <div>
-        <h3 style="margin:0 0 12px">轮播图（可多张）</h3>
-        <div id="fmCarouselList"></div>
-        <p><button type="button" class="button button-secondary" id="fmAddCarousel">+ 新增轮播项</button></p>
-    </div>
-    <div>
-        <h3 style="margin:0 0 12px">右侧方形图片（固定 2 张）</h3>
-        <div id="fmSquareList"></div>
-    </div>
-</div>
-
-<p style="margin-top:18px">
-    <button type="button" class="fm-btn" id="fmSaveHomeAssets">保存首页展示</button>
-    <span id="fmHomeMsg" style="margin-left:12px;color:#666"></span>
-</p>
-</div>
-
-<style>
+.fm-home-filing{margin:0 0 18px;padding:14px 16px;border:1px solid #dcdcde;border-radius:10px;background:#fafafa}
+.fm-home-filing-label{display:flex;align-items:flex-start;gap:10px;cursor:pointer}
+.fm-home-layout{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.fm-sub-title{margin:0 0 12px}
+.fm-panel-actions{margin-top:18px}
 .fm-home-card{background:#f8f8f8;border:1px solid #ddd;border-radius:8px;padding:14px;margin-bottom:12px}
 .fm-home-card .fm-home-grid{display:grid;grid-template-columns:160px 1fr;gap:14px}
 .fm-home-preview{width:100%;aspect-ratio:16/9;background:#e9e9e9;border:1px dashed #ccc;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#999;font-size:12px}
@@ -540,10 +551,59 @@ function fm_admin_page(){
 .fm-home-fields .fm-row{margin-bottom:10px}
 .fm-home-actions{display:flex;gap:8px;align-items:center;margin-top:8px}
 .fm-home-label{font-weight:600;margin-bottom:6px;display:block}
+.fm-upload-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px}
+.fm-upload-grid .fm-row{margin-bottom:0}
+.fm-upload-grid .fm-row:nth-child(1){grid-column:1/-1}
+.fm-upload-grid .fm-row:nth-child(5){grid-column:1/-1}
+.fm-upload-grid .fm-helper{grid-column:1/-1}
+.fm-upload-grid .fm-actions{grid-column:1/-1}
+.fm-table-wrap{overflow:auto;border:1px solid #dcdcde;border-radius:10px}
+.fm-list table{width:100%;border-collapse:collapse;min-width:860px}
+.fm-list th,.fm-list td{padding:10px;border-bottom:1px solid #ececec;text-align:left;vertical-align:top}
+.fm-list th{background:#f6f7f7;color:#1d2327;position:sticky;top:0;z-index:1}
+.fm-list tr:nth-child(even) td{background:#fcfcfd}
+@media(max-width:1100px){.fm-overview{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:900px){
+    .fm-page-header{flex-direction:column}
+    .fm-prompt-layout,.fm-home-layout,.fm-upload-grid{grid-template-columns:1fr}
     .fm-home-card .fm-home-grid{grid-template-columns:1fr}
 }
+@media(max-width:640px){.fm-overview{grid-template-columns:1fr}}
 </style>
+
+
+<?php $home_assets = fm_get_home_assets(); ?>
+<div class="fm-form fm-panel" id="fm-section-home">
+<h2>首页展示管理 / 全站备案模式</h2>
+<p class="fm-panel-intro">这里管理首页顶部的大轮播图，以及右侧两张方形图片。保存后，前台 <code>/font-index.html</code> 会自动读取并展示；同时也可以开启全站备案模式。</p>
+
+<div class="fm-home-filing">
+    <label class="fm-home-filing-label">
+        <input type="checkbox" id="fmFilingMode" style="margin-top:2px" <?php checked(!empty($home_assets['filing_mode'])); ?>>
+        <span>
+            <strong>开启备案模式</strong><br>
+            <span class="fm-muted">勾选并保存后，全站会进入备案模式：首页、字体列表、提示词页、搜索页，以及重建后的字体详情页都会隐藏内容；取消勾选并保存后恢复正常展示。</span>
+        </span>
+    </label>
+</div>
+
+<div class="fm-home-layout">
+    <div>
+        <h3 class="fm-sub-title">轮播图（可多张）</h3>
+        <div id="fmCarouselList"></div>
+        <p><button type="button" class="button button-secondary" id="fmAddCarousel">+ 新增轮播项</button></p>
+    </div>
+    <div>
+        <h3 class="fm-sub-title">右侧方形图片（固定 2 张）</h3>
+        <div id="fmSquareList"></div>
+    </div>
+</div>
+
+<p class="fm-panel-actions">
+    <button type="button" class="fm-btn" id="fmSaveHomeAssets">保存首页展示</button>
+    <span id="fmHomeMsg" class="fm-msg"></span>
+</p>
+</div>
 
 <script>
 (function(){
@@ -696,9 +756,9 @@ function fm_admin_page(){
 })();
 </script>
 
-<div class="fm-form fm-prompt-form">
+<div class="fm-form fm-prompt-form fm-panel" id="fm-section-prompts">
 <h2>字体提示词管理</h2>
-<p style="margin:0 0 16px;color:#666">支持后台自主上传图片并填写提示词，保存后前台 <code>/font-prompts.html</code> 会自动展示。这里也可以直接删除已有提示词。</p>
+<p class="fm-panel-intro">支持后台自主上传图片并填写提示词，保存后前台 <code>/font-prompts.html</code> 会自动展示。这里也可以直接删除已有提示词。</p>
 
 <div class="fm-prompt-layout">
     <div class="fm-prompt-image-box">
@@ -710,7 +770,7 @@ function fm_admin_page(){
                 <button type="button" class="button" id="fmPromptClearImage">清空图片</button>
             </div>
         </div>
-        <div class="fm-row" style="margin-bottom:0">
+        <div class="fm-row">
             <label>图片 URL</label>
             <input type="text" id="fmPromptImageUrl" placeholder="可手动输入图片 URL，或用上方按钮选择">
         </div>
@@ -727,21 +787,21 @@ function fm_admin_page(){
                 </select>
                 <div class="fm-cat-manage">
                     <div class="fm-inline-row">
-                        <input type="text" id="fmNewPromptCategory" placeholder="新增分类名称，例如：科技字" style="min-width:220px">
+                        <input type="text" id="fmNewPromptCategory" placeholder="新增分类名称，例如：科技字">
                         <button type="button" class="button button-secondary" id="fmAddPromptCategoryBtn">新增分类</button>
-                        <span id="fmPromptCatMsg" style="color:#666"></span>
+                        <span id="fmPromptCatMsg" class="fm-muted"></span>
                     </div>
                     <div class="fm-cat-tags" id="fmPromptCatTags"></div>
                 </div>
             </div>
             <div class="fm-row">
                 <label>提示词内容</label>
-                <textarea name="prompt" rows="8" style="width:100%;padding:10px;font-size:14px;border:1px solid #ccc;border-radius:4px" placeholder="输入提示词内容..." required></textarea>
+                <textarea name="prompt" rows="8" placeholder="输入提示词内容..." required></textarea>
             </div>
             <input type="hidden" name="action" value="fm_upload_prompt">
             <input type="hidden" name="image_url" id="fmPromptImageUrlHidden" value="">
             <button type="submit" class="fm-btn">上传提示词</button>
-            <span id="fmPromptMsg" style="margin-left:12px;color:#666"></span>
+            <span id="fmPromptMsg" class="fm-msg"></span>
         </form>
     </div>
 </div>
@@ -925,17 +985,30 @@ function fm_admin_page(){
 })();
 </script>
 
-<div class="fm-list fm-prompt-list">
-<h2>已有提示词（共 <?php echo count($db_prompts); ?> 条）</h2>
-<?php if(empty($db_prompts)): ?>
-<p>暂无提示词，请上传。</p>
+<div class="fm-list fm-prompt-list fm-panel" id="fm-section-prompt-list">
+<?php
+$pm_total = count($db_prompts);
+$pm_per_page = 25;
+$pm_page = isset($_GET['pm_page']) ? max(1, intval($_GET['pm_page'])) : 1;
+$pm_total_pages = max(1, ceil($pm_total / $pm_per_page));
+$pm_start = ($pm_page - 1) * $pm_per_page;
+$pm_page_items = array_slice($db_prompts, $pm_start, $pm_per_page);
+?>
+<h2>已有提示词（共 <?php echo $pm_total; ?> 条）</h2>
+<div class="fm-font-search-wrap" style="margin-bottom:14px;display:flex;gap:10px;align-items:center">
+    <input type="text" id="fmPromptSearch" placeholder="模糊搜索提示词内容、分类…" style="flex:1;max-width:420px;padding:8px 12px;border:1px solid #c3c4c7;border-radius:6px;font-size:14px">
+    <span class="fm-muted" id="fmPromptCount"><?php echo $pm_total; ?> 条</span>
+</div>
+<?php if(empty($pm_page_items)): ?>
+<p class="fm-muted">暂无提示词，请上传。</p>
 <?php else: ?>
-<table>
+<div class="fm-table-wrap">
+<table id="fmPromptTable">
 <tr><th>ID</th><th>配图</th><th>分类</th><th>提示词</th><th>创建时间</th><th>操作</th></tr>
-<?php foreach($db_prompts as $item): ?>
+<?php foreach($pm_page_items as $item): ?>
 <tr>
 <td><?php echo intval($item['id']); ?></td>
-<td><?php if(!empty($item['image_url'])): ?><img src="<?php echo esc_url($item['image_url']); ?>" alt=""><?php else: ?><span style="color:#999">无图片</span><?php endif; ?></td>
+<td><?php if(!empty($item['image_url'])): ?><img src="<?php echo esc_url($item['image_url']); ?>" alt=""><?php else: ?><span class="fm-muted">无图片</span><?php endif; ?></td>
 <td><?php echo esc_html($item['category']); ?></td>
 <td><div class="fm-prompt-text"><?php echo esc_html(mb_strimwidth($item['prompt'], 0, 180, '...')); ?></div></td>
 <td><?php echo esc_html($item['created_at']); ?></td>
@@ -943,12 +1016,23 @@ function fm_admin_page(){
 </tr>
 <?php endforeach; ?>
 </table>
+</div>
+<div class="fm-pagination" style="margin-top:16px;display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap">
+    <a href="?page=font-manager&pm_page=1" class="fm-page-btn">«</a>
+    <a href="?page=font-manager&pm_page=<?php echo max(1, $pm_page-1); ?>" class="fm-page-btn">‹</a>
+    <?php for($p = max(1, $pm_page-2); $p <= min($pm_total_pages, $pm_page+2); $p++): ?>
+        <a href="?page=font-manager&pm_page=<?php echo $p; ?>" class="fm-page-btn <?php if($p===$pm_page) echo 'active'; ?>"><?php echo $p; ?></a>
+    <?php endfor; ?>
+    <a href="?page=font-manager&pm_page=<?php echo min($pm_total_pages, $pm_page+1); ?>" class="fm-page-btn">›</a>
+    <a href="?page=font-manager&pm_page=<?php echo $pm_total_pages; ?>" class="fm-page-btn">»</a>
+    <span style="margin-left:12px;color:#646970;font-size:13px">第 <?php echo $pm_page; ?> / <?php echo $pm_total_pages; ?> 页，共 <?php echo $pm_total; ?> 条</span>
+</div>
 <?php endif; ?>
 </div>
 
-<div class="fm-form">
+<div class="fm-form fm-panel" id="fm-section-upload-font">
 <h2>上传新字体</h2>
-<form id="fmForm" enctype="multipart/form-data">
+<form id="fmForm" class="fm-upload-grid" enctype="multipart/form-data">
 <div class="fm-row"><label>字体名称</label><input type="text" name="font_name" required placeholder="例如：思源宋体"></div>
 <div class="fm-row"><label>字体分类</label><select name="category">
 <?php foreach($cat_list as $cat): ?>
@@ -957,11 +1041,12 @@ function fm_admin_page(){
 </select></div>
 <div class="fm-row"><label>字体文件 (TTF/OTF/WOFF/WOFF2)</label><input type="file" name="font_file" accept=".ttf,.otf,.woff,.woff2" required></div>
 <div class="fm-row"><label>预览文字（留空用"字"）</label><input type="text" name="preview_text" placeholder="字" maxlength="100"></div>
-<div class="fm-row"><label>字体标识 font_class（自动生成）</label><input type="text" id="fm_class" name="font_class" placeholder="自动生成，上传后会以此写入 fonts.css" readonly></div><p style="margin:-6px 0 12px;color:#666;font-size:12px">中文字体会自动转为安全标识，避免详情页和列表页字体预览失效。</p>
+<div class="fm-row"><label>字体标识 font_class（自动生成）</label><input type="text" id="fm_class" name="font_class" placeholder="自动生成，上传后会以此写入 fonts.css" readonly></div>
+<p class="fm-helper">中文字体会自动转为安全标识，避免详情页和列表页字体预览失效。</p>
 <input type="hidden" name="action" value="fm_upload">
-<button type="submit" class="fm-btn">上传字体</button>
+<div class="fm-actions"><button type="submit" class="fm-btn">上传字体</button></div>
 </form>
-<div id="fmMsg" style="margin-top:15px"></div>
+<div id="fmMsg" class="fm-muted" style="margin-top:12px"></div>
 </div>
 
 <script>
@@ -1017,14 +1102,27 @@ function fm_admin_page(){
 })();
 </script>
 
-<div class="fm-list">
+<div class="fm-list fm-panel" id="fm-section-font-list">
 <h2>已有字体（共 <?php echo count($db_fonts); ?> 款）</h2>
+<div class="fm-font-search-wrap" style="margin-bottom:14px;display:flex;gap:10px;align-items:center">
+    <input type="text" id="fmFontSearch" placeholder="搜索字体名称或分类…" style="flex:1;max-width:360px;padding:8px 12px;border:1px solid #c3c4c7;border-radius:6px;font-size:14px">
+    <span class="fm-muted" id="fmFontCount"><?php echo count($db_fonts); ?> 款字体</span>
+</div>
+<?php
+$fm_per_page = 25;
+$fm_total = count($db_fonts);
+$fm_page = isset($_GET['fm_page']) ? max(1, intval($_GET['fm_page'])) : 1;
+$fm_total_pages = max(1, ceil($fm_total / $fm_per_page));
+$fm_start = ($fm_page - 1) * $fm_per_page;
+$fm_page_fonts = array_slice($db_fonts, $fm_start, $fm_per_page);
+?>
 <?php if(empty($db_fonts)): ?>
-<p>暂无字体，请上传。</p>
-<?php return; endif; ?>
-<table>
+<p class="fm-muted">暂无字体，请上传。</p>
+<?php else: ?>
+<div class="fm-table-wrap">
+<table id="fmFontTable">
 <tr><th>ID</th><th>名称</th><th>分类</th><th>文件</th><th>大小</th><th>操作</th></tr>
-<?php foreach($db_fonts as $f):
+<?php foreach($fm_page_fonts as $f):
     $size = $f["file_size"] > 1048576 ? round($f["file_size"]/1048576,1)."M" : round($f["file_size"]/1024)."K";
 ?>
 <tr>
@@ -1037,6 +1135,19 @@ function fm_admin_page(){
 </tr>
 <?php endforeach; ?>
 </table>
+</div>
+<div class="fm-pagination" style="margin-top:16px;display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap">
+    <a href="?page=font-manager&fm_page=1" class="fm-page-btn">«</a>
+    <a href="?page=font-manager&fm_page=<?php echo max(1, $fm_page-1); ?>" class="fm-page-btn">‹</a>
+    <?php for($p = max(1, $fm_page-2); $p <= min($fm_total_pages, $fm_page+2); $p++): ?>
+        <a href="?page=font-manager&fm_page=<?php echo $p; ?>" class="fm-page-btn <?php if($p===$fm_page) echo 'active'; ?>"><?php echo $p; ?></a>
+    <?php endfor; ?>
+    <a href="?page=font-manager&fm_page=<?php echo min($fm_total_pages, $fm_page+1); ?>" class="fm-page-btn">›</a>
+    <a href="?page=font-manager&fm_page=<?php echo $fm_total_pages; ?>" class="fm-page-btn">»</a>
+    <span style="margin-left:12px;color:#646970;font-size:13px">第 <?php echo $fm_page; ?> / <?php echo $fm_total_pages; ?> 页，共 <?php echo $fm_total; ?> 款</span>
+</div>
+<style>.fm-page-btn{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 8px;border:1px solid #dcdcde;border-radius:6px;background:#fff;color:#1d2327;text-decoration:none;font-size:13px;transition:all .15s}.fm-page-btn:hover{background:#f6f7f7}.fm-page-btn.active{background:#2271b1;color:#fff;border-color:#2271b1}</style>
+<?php endif; ?>
 </div>
 
 <script>
@@ -1068,6 +1179,60 @@ document.querySelectorAll(".fm-delete[data-slug]").forEach(function(el){
         .then(function(d){ alert(d.success?"删除成功":"失败"); location.reload(); });
     };
 });
+// Font list search filter (only current page rows)
+(function(){
+    var searchInput = document.getElementById('fmFontSearch');
+    var table = document.getElementById('fmFontTable');
+    var countSpan = document.getElementById('fmFontCount');
+    if(!searchInput || !table) return;
+    var dataRows = [];
+    Array.prototype.slice.call(table.querySelectorAll('tr')).forEach(function(row, i){
+        if(i === 0) return;
+        dataRows.push(row);
+    });
+    function filterRows(){
+        var q = searchInput.value.trim().toLowerCase();
+        var visible = 0;
+        dataRows.forEach(function(row){
+            var text = row.textContent.toLowerCase();
+            if(!q || text.indexOf(q) !== -1){
+                row.style.display = '';
+                visible++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+        if(countSpan) countSpan.textContent = visible + ' / ' + dataRows.length + ' 款（当前页）';
+    }
+    searchInput.addEventListener('input', filterRows);
+})();
+// Prompt list fuzzy search (substring match, case-insensitive)
+(function(){
+    var searchInput = document.getElementById('fmPromptSearch');
+    var table = document.getElementById('fmPromptTable');
+    var countSpan = document.getElementById('fmPromptCount');
+    if(!searchInput || !table) return;
+    var dataRows = [];
+    Array.prototype.slice.call(table.querySelectorAll('tr')).forEach(function(row, i){
+        if(i === 0) return;
+        dataRows.push(row);
+    });
+    function filterRows(){
+        var q = searchInput.value.trim().toLowerCase();
+        var visible = 0;
+        dataRows.forEach(function(row){
+            var text = row.textContent.toLowerCase();
+            if(!q || text.indexOf(q) !== -1){
+                row.style.display = '';
+                visible++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+        if(countSpan) countSpan.textContent = visible + ' / ' + dataRows.length + ' 条（当前页）';
+    }
+    searchInput.addEventListener('input', filterRows);
+})();
 document.querySelectorAll(".fm-delete-prompt").forEach(function(el){
     el.onclick = function(){
         if(!confirm("确定删除这条提示词吗？")) return;
